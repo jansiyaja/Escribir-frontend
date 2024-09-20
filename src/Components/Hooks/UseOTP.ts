@@ -67,14 +67,11 @@ const resendOtp = async (): Promise<void> => {
   }
 }
 
-
-      const handleVerifyOtp = async (e: React.FormEvent) => {
+ const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         
-        
-        
-        if (!email) {
+         if (!email) {
           setError("No email found. Please register again.");
           setLoading(false);
           return;
@@ -86,8 +83,8 @@ const resendOtp = async (): Promise<void> => {
           console.log(response);
 
            if (response.status === 200) {
-            localStorage.removeItem("emailForVerification");
-            navigate('/login'); 
+           
+            navigate('/'); 
           }
         }catch (error) {
       console.error('Registration error:', error);
@@ -107,7 +104,7 @@ const resendOtp = async (): Promise<void> => {
   } finally {
           setLoading(false);
         }
-      }
+}
     
   return {
 error,

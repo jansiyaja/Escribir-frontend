@@ -1,12 +1,16 @@
-import React from 'react'
+
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import axiosInstance from '../../services/axiosInstance';
 import { ILogin } from '../../Interfaces/Auth';
 import { useNavigate } from 'react-router-dom';
 import { IErrorState } from '../../Interfaces/Auth';
 
+ import { setCredentials } from '../../redux/slices/authSlice';
+
 
 const UseLogin = () => {
+  const dispatch = useDispatch();
 
     const [login, setLogin] = useState<ILogin>({
      
@@ -70,11 +74,16 @@ const UseLogin = () => {
         
 
         const response = await axiosInstance.post("/users/login", login, { withCredentials: true });
-        console.log(response);
+       
         
   
         if (response.status=== 200) {
-          console.log('Navigating to home page');
+         
+          dispatch(setCredentials({
+            user: response.data.user,
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+          }));
            navigate("/");
         }
       } catch (error) {
