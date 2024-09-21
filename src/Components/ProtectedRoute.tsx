@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC = () => {
     return (
         <div className="flex h-screen">
             <Navbar /> 
-            <div className="flex-1 p-4">
+            <div className="flex-1 p-5">
                 <Outlet /> 
             </div>
         </div>
