@@ -1,22 +1,29 @@
-import { useState } from 'react';
 
-import { HiMoon as Brightness4Icon, HiSun as Brightness7Icon } from 'react-icons/hi'; // Importing from 'react-icons/hi'
+import { HiOutlineMoon,HiOutlineSun } from "react-icons/hi2";
+import { setTheme } from '../redux/slices/themeSlice';
 import { IconButton } from '@radix-ui/themes';
+import { useDispatch,useSelector } from 'react-redux';
+
 
 const ToggleTheme = () => {
-  const [darkMode, setDarkMode] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const { darkMode } = useSelector((state: any) => state.theme);
+  
 
   const handleDarkMode = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle('dark', !darkMode); // Ensure correct toggling of class
+    document.body.classList.toggle('dark', !darkMode)
+    dispatch(setTheme(!darkMode));
   }
+    
+  const CurrentIcon = darkMode ? HiOutlineSun : HiOutlineMoon;
 
   return (
     <>
-      <IconButton onClick={handleDarkMode} color="iris">
-        {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-      </IconButton>
-     
+      <IconButton onClick={handleDarkMode}  className="bg-white p-2 rounded-lg hover:bg-gray-200">
+      <CurrentIcon  className="text-gray-600 w-8 h-8"/>
+     </IconButton>
     </>
   );
 };
