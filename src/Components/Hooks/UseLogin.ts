@@ -55,7 +55,7 @@ const UseLogin = () => {
       tempErrors.password = "Password is required";
     } else if (!passwordRegex.test(login.password)) {
       tempErrors.password =
-        "Password must be at least 6 characters, contain at least one uppercase letter, one number, and one special character";
+        "Invalid password";
     }
 
    
@@ -88,7 +88,7 @@ const UseLogin = () => {
         }
       } catch (error) {
         console.error('Login error:', error);
-        setError({ generic: "Registration failed. Please try again." });
+        setError({ generic: "Login failed. Please try again." });
       } finally {
         setLoading(false);
       }
