@@ -9,10 +9,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            config.headers['Authorization'] = `Bearer ${accessToken}`;
-        }
+       
         return config;
     },
     (error) => {
@@ -29,15 +26,21 @@ axiosInstance.interceptors.response.use(
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
-            const refreshToken = localStorage.getItem('refreshToken');
+           
             try {
                 const response = await axios.post(`${baseURL}/users/refresh-token`, {
-                    token: refreshToken,
+               
+                
+                },{
+                    
+                        withCredentials: true 
+                    
                 });
+               
+                
 
                 if (response.status === 200) {
                     const newAccessToken = response.data.accessToken;
-                    localStorage.setItem('accessToken', newAccessToken);
 
                   
                     axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
@@ -46,8 +49,7 @@ axiosInstance.interceptors.response.use(
             } catch (error) {
                 console.error('Refresh token failed:', error);
                 
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
+              
                 window.location.href = '/login';
             }
         }
