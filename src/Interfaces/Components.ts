@@ -17,3 +17,10 @@
     showEyeIcon?: boolean;
   }
   
+  export interface ToastProps {
+    open: boolean;
+    setOpen: (state: boolean) => void;
+    message: string;
+    type: "success" | "error"; 
+  }
+  
