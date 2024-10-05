@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthState } from '../../Interfaces/slice';
+import { AuthState, User  } from '../../Interfaces/slice';
 
 
 const initialState: AuthState = {
@@ -14,8 +14,10 @@ const authSlice = createSlice({
   reducers: {
     setCredentials(state, action: PayloadAction<AuthState>) {
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
+      
+    },
+    setUser(state, action: PayloadAction<User>) { 
+      state.user = action.payload;
     },
     logout(state) {
       state.user = null;
@@ -25,5 +27,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout,setUser } = authSlice.actions;
 export default authSlice.reducer;
