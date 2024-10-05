@@ -1,199 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Skeleton } from '@radix-ui/themes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
-
+import axiosInstance from '../../../services/Api/axiosInstance';
+import { handleAxiosError } from '../../../utils/errorHandling';
+import FormField from './FormField'; 
+import useToast from '../../../Components/Hooks/UseToast';
+import ToastComponent from '../../../Components/ToastNotification';
+import { User } from '../../../Interfaces/slice';
+import { setUser } from '../../../redux/slices/authSlice';
+import { useDispatch } from 'react-redux';
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { darkMode } = useSelector((state: RootState) => state.theme);
-
+  const dispatch = useDispatch();
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    username: user?.username || '',
-    email: user?.email || '',
-    dob : user?.dob || '',
-    bio: user?.bio || '',
-    phone: user?.phone || '',
-    location: user?.location || '',
-    linkedIn: user?.linkedIn || '',
-    portfolio: user?.portfolio || '',
-    github: user?.github || '',
-  });
+  const [userData, setUserData] = useState<User | null>(user);
+  const { showToast, setShowToast, toastMessage, toastType, triggerToast } = useToast();
+  const [isSaved, setIsSaved] = useState(false); 
 
+  useEffect(() => {
+    setUserData(user);
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
+    const { name, value } = e.target;
+  
+    setUserData((prevData) => {
+      if (!prevData) return null; 
+
+      return {
+        ...prevData,
+        [name]: name === 'phone' ? value.replace(/\D/g, '') : value,
+      } as User; 
     });
   };
 
- 
-  const handleEdit = () => {
-    setEditMode(!editMode);
-  };
+  const handleEdit = () => setEditMode(!editMode);
 
-  
-  const handleSave = () => {
-    console.log('Saved Data:', formData);
-    setEditMode(false);
+  const handleSave = async () => {
+    try {
+      if (!userData) return; 
+
+      const updatedFormData = {
+        ...userData,
+        phone: userData.phone ? parseInt(userData.phone, 10) : undefined,
+      };
+      const response = await axiosInstance.post('/users/profile', updatedFormData, { withCredentials: true });
+      
+      if (response.status === 200) {
+        triggerToast("Profile updated successfully", "success");
+        setIsSaved(true); 
+
+        const getResponse = await axiosInstance.get('/users/profile', { withCredentials: true });
+        if (getResponse.status === 200) {
+         dispatch(setUser(getResponse.data.user));
+        }
+      } else {
+        triggerToast("Failed to update profile. Please try again.", "error");
+        console.log('Failed to update profile:', response.statusText);
+      }
+    
+    } catch (err) {
+      const errorMessage = handleAxiosError(err);
+      console.log(errorMessage);
+    }
   };
 
   return (
-    <div className={`flex items-center justify-center ${darkMode ? 'bg-gray-800' :'bg-white' } `}>
+    <div className={`flex items-center justify-center ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
       <div className={`p-10 rounded-xl shadow-md w-full max-w-md ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-gray-600'}`}>
-        <h2 className="text-3xl font-bold text-blue-600 mb-8">@{formData.username || <Skeleton className="h-8 w-1/2 bg-gray-300" />}</h2>
+        <h2 className="text-3xl font-bold text-blue-600 mb-8">
+          @{userData?.username || <Skeleton className="h-8 w-1/2 bg-gray-300" />}
+        </h2>
         <form className="space-y-4">
-            <section>
+          <section>
             <h3 className="text-lg font-semibold mb-4">Basic Details</h3>
-            <div className="space-y-3">
-            <label className="block text-sm font-medium">Name</label>
-            {editMode ? (
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className={`mt-1 block w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              />
-            ) : (
-              <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.username}</p>
-            )}
-          </div>
+            <FormField label="Name" name="username" value={userData?.username || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} />
+            <FormField label="Email" name="email" value={userData?.email || ''} editMode={editMode} type="email" onChange={handleChange} darkMode={darkMode} />
+           
+            <FormField label="Date of Birth" name="dob" value={userData?.dob ? new Date(userData.dob).toISOString().split('T')[0] : ''} 
+             editMode={editMode} 
+                    type="date" 
+                      onChange={handleChange} 
+                     darkMode={darkMode} 
+                     />
+              </section>
 
-          <div className= 'space-y-3'>
-            <label className="block text-sm font-medium ">Email</label>
-            {editMode ? (
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className={`mt-1 block w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              />
-            ) : (
-              <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.email}</p>
-            )}
-          </div>
-          <div className= 'space-y-3'>
-            <label className="block text-sm font-medium ">Phone</label>
-            {editMode ? (
-              <input
-                type="number"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className={`mt-1 block w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              />
-            ) : (
-              <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.phone}</p>
-            )}
-          </div>
+          <section>
+            <h3 className="text-lg font-semibold mb-4">Portfolio Links</h3>
+            <FormField label="Portfolio" name="portfolio" value={userData?.portfolio || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} />
+            <FormField label="LinkedIn" name="linkedIn" value={userData?.linkedIn || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} />
+            <FormField label="GitHub" name="github" value={userData?.github || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} />
+          </section>
 
+          <section>
+            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+            <FormField label="Bio" name="bio" value={userData?.bio || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} isTextArea />
+            <FormField label="Location" name="location" value={userData?.location || ''} editMode={editMode} onChange={handleChange} darkMode={darkMode} />
+          </section>
 
-          <div className= 'space-y-3'>
-          <label className="block text-sm font-medium">Date Of Birth</label>
-          {editMode ? (
-          <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    onChange={handleChange}
-                    className={`w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                  />
-                ) : (
-                    <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.dob}</p>
-                  )}
-          </div>
-            </section>
-
-            <section>
-             <h3 className="text-lg font-semibold mb-4">Portfolio Links</h3>
- 
-             <div className= 'space-y-4'>
-                <label className="block text-sm font-medium">portfolio</label>
-                {editMode ? (
-                   <input
-                    type="text"
-                    name="portfolio"
-                    value={formData.portfolio || ''}
-                    onChange={handleChange}
-                    className={`w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                  />
-                ) : (
-                    <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.portfolio}</p>
-                  )}
-            </div>
-            <div className= 'space-y-4'>
-                <label className="block text-sm font-medium">linkedIn</label>
-                {editMode ? (
-                   <input
-                    type="string"
-                    name="linkedIn"
-                    value={formData.linkedIn || ''}
-                    onChange={handleChange}
-                    className={`w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                  />
-                ) : (
-                    <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.linkedIn}</p>
-                  )}
-            </div>
-            <div className= 'space-y-4'>
-                <label className="block text-sm font-medium">GitHub</label>
-                {editMode ? (
-                   <input
-                    type="string"
-                    name="github"
-                    value={formData.github || ''}
-                    onChange={handleChange}
-                    className={`w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-                  />
-                ) : (
-                    <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.github}</p>
-                  )}
-            </div>
-
-
-            </section>
-          
-        <section>
-
-        <h3 className="text-lg font-semibold mb-4">Aditional Information</h3>
-        <div className= 'space-y-4'>
-            <label className="block text-sm font-medium">Bio</label>
-            {editMode ? (
-              <textarea
-                name="bio"
-                value={formData.bio}
-                onChange={handleChange}
-                className={`mt-1 block w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              ></textarea>
-            ) : (
-              <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.bio}</p>
-            )}
-            <div className="text-right text-xs text-gray-500 mt-1">{formData.bio.length}/200</div>
-          </div>
-        <div className= 'space-y-4'>
-            <label className="block text-sm font-medium">Location</label>
-            {editMode ? (
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                className={`mt-1 block w-full p-2 border ${darkMode ? 'border-gray-700 bg-gray-800 text-white' : 'border-gray-300 bg-white'} rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500`}
-              />
-            ) : (
-              <p className={`mt-1 p-2 border ${darkMode ? 'border-gray-700 bg-gray-700' : 'border-gray-300 bg-gray-100'} rounded-md`}>{formData.location}</p>
-            )}
-          </div>
-
-        </section>
-
-         
-         
-        
-        
           <button
             type="button"
             onClick={handleEdit}
@@ -201,7 +107,7 @@ const ProfilePage: React.FC = () => {
           >
             {editMode ? 'Cancel' : 'Edit'}
           </button>
-          {editMode && (
+          {editMode && !isSaved && ( 
             <button
               type="button"
               onClick={handleSave}
@@ -210,6 +116,12 @@ const ProfilePage: React.FC = () => {
               Save
             </button>
           )}
+          <ToastComponent
+            open={showToast}
+            setOpen={setShowToast}
+            message={toastMessage}
+            type={toastType}
+          />
         </form>
       </div>
     </div>

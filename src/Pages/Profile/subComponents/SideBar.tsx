@@ -3,25 +3,26 @@ import { HiOutlineCamera } from "react-icons/hi2";
 import { FaSave } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
-import axiosInstance from "../../../services/axiosInstance";
-import axios from "axios";
+import axiosInstance from "../../../services/Api/axiosInstance";
 import ToastComponent from "../../../Components/ToastNotification";
-
+import { handleAxiosError } from "../../../utils/errorHandling";
+import useToast from "../../../Components/Hooks/UseToast";
+import { setUser } from "../../../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { User } from "../../../Interfaces/slice";
 
 const Sidebar = () => {
   const features = ['Profile', 'Customization', 'Notification', 'Account'];
   const { darkMode } = useSelector((state: RootState) => state.theme);
   const user = useSelector((state: RootState) => state.auth.user);
   const [image, setImage] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<"success" | "error">("success");
+  const { showToast, setShowToast, toastMessage, toastType, triggerToast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null); // Store the selected file
+  const [file, setFile] = useState<File | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
- 
     if (user?.image) {
       setImage(user.image);
     }
@@ -57,29 +58,20 @@ const Sidebar = () => {
         },
       });
 
-      console.log("res", response);
-      setToastMessage("Your profile picture has been uploaded successfully!");
-      setToastType("success"); 
+      triggerToast("Your profile picture has been uploaded successfully!", "success");
+      console.log(response);
+      
+     
+      dispatch(setUser({ ...user, image: response.data.secureUrl } as User)); 
       setShowToast(true);
       setImage(response.data.secureUrl); 
-      setFile(null);
+      setFile(null); 
     } catch (err) {
-      console.error('Upload error:', err);
-      let errorMessage = "Upload failed. Please try again.";
-
-      if (axios.isAxiosError(err)) {
-        if (err.response) {
-          const backendErrors = err.response.data.error;
-          errorMessage = backendErrors || "An unexpected error occurred.";
-        } else if (err.request) {
-          errorMessage = "Network error. Please check your connection and try again.";
-        }
-      }
-      setToastMessage(errorMessage);
-      setToastType("error"); 
+      const errorMessage = handleAxiosError(err);
+      triggerToast(errorMessage, "error");
       setShowToast(true); 
     } finally {
-      setUploading(false);
+      setUploading(false); 
     }
   };
 
@@ -100,7 +92,7 @@ const Sidebar = () => {
         <div className={`absolute bottom-0 right-0 ${darkMode ? 'bg-gray-900' : 'bg-white'} p-1 rounded-full shadow-lg`}>
           <label htmlFor="file-upload" className={`cursor-pointer`}>
             <button
-              onClick={handleConfirmUpload}
+              onClick={file ? handleConfirmUpload : undefined} 
               disabled={uploading || !file}
               className={`w-10 h-10 flex items-center justify-center text-white bg-blue-500 rounded-full hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
@@ -127,7 +119,6 @@ const Sidebar = () => {
           </button>
         ))}
       </div>
-
 
       <ToastComponent
         open={showToast}
