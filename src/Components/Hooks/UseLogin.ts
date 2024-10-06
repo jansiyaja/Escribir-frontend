@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import axiosInstance from '../../services/axiosInstance';
+import axiosInstance from '../../services/Api/axiosInstance';
 import { ILogin } from '../../Interfaces/Auth';
 import { useNavigate } from 'react-router-dom';
 import { IErrorState } from '../../Interfaces/Auth';
@@ -75,6 +75,7 @@ const UseLogin = () => {
 
         const response = await axiosInstance.post("/users/login", login, { withCredentials: true });
        
+        console.log(response.data);
         
   
         if (response.status=== 200) {

@@ -1,7 +1,7 @@
 
 import {  useState ,} from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "../../services/Api/axiosInstance";
 import axios from 'axios'
 
 const UseOTP = () => {

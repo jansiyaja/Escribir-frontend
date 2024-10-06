@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "../../services/Api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { IRegister,IErrorState } from "../../Interfaces/Auth";
 import axios from "axios";
