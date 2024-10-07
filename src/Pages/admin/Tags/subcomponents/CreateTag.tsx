@@ -1,62 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axiosAdminInstance from '../../../../services/Api/axioxAdminInstance';
+import { CreateTagProps } from '../../../../Interfaces/Components';
 
-interface CreateTagProps {
-    onTagCreated: () => void; 
-}
-const CreateTag: React.FC<CreateTagProps> = ({ onTagCreated }) => {
-  const [tagName, setTagName] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+const CreateTag: React.FC<CreateTagProps> = ({ onTagCreatedOrUpdated, tagToEdit, isEditMode }) => {
+    const [tagName, setTagName] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
-  const handleCreateTag = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-        const response = await axiosAdminInstance.post('/admin/createtags', { name: tagName }, { withCredentials: true });
-        if (response.status === 201) {
-            setSuccess('Tag created successfully');
+
+    useEffect(() => {
+        if (isEditMode && tagToEdit) {
+            setTagName(tagToEdit.name);
+        } else {
             setTagName('');
-
-           
-            onTagCreated();
         }
-    } catch (error: any) {
-        if (error.response) {
-            setError(error.response.data.message || 'An error occurred');
+    }, [isEditMode, tagToEdit]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            if (isEditMode && tagToEdit) {
+                
+                console.log("Editing tag with ID:", tagToEdit._id);
+                await axiosAdminInstance.put(`/admin/update-tag/${tagToEdit._id}`, { name: tagName }, { withCredentials: true });
+                setSuccess('Tag updated successfully');
+            } else {
+              
+                await axiosAdminInstance.post('/admin/createtags', { name: tagName }, { withCredentials: true });
+                setSuccess('Tag created successfully');
+            }
+            setTagName(''); 
+            onTagCreatedOrUpdated();  
+        } catch (error: any) {
+            setError('Failed to submit tag');
         }
-    }
-};
+    };
 
-  return (
-    <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
-      <h2 className="text-lg font-semibold mb-4">Create New Tag</h2>
-      <form onSubmit={handleCreateTag} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Tag Name</label>
-          <input
-            type="text"
-            value={tagName}
-            onChange={(e) => setTagName(e.target.value)}
-            required
-            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Enter tag name"
-          />
-        </div>
-        <div className="flex items-center justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-          >
-            Create Tag
-          </button>
-        </div>
-      </form>
+    return (
+        <div className="flex items-center justify-center  bg-gray-100">
+            <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-md">
+          
+                <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+                    {isEditMode ? 'Edit Tag' : 'Create New Tag'}
+                </h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Tag Name
+                        </label>
+                        <input
+                            type="text"
+                            value={tagName}
+                            onChange={(e) => setTagName(e.target.value)}
+                            required
+                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Enter tag name"
+                        />
+                    </div>
+                    <div className="flex justify-end space-x-3">
+                        <button
+                            type="submit"
+                            className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white 
+                                ${isEditMode ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'}
+                                rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+                        >
+                            {isEditMode ? 'Update Tag' : 'Create Tag'}
+                        </button>
+                    </div>
+                </form>
 
-     
-      {error && <p className="text-red-500 mt-4">{error}</p>}
-      {success && <p className="text-green-500 mt-4">{success}</p>}
-    </div>
-  );
+              
+                {error && (
+                    <p className="mt-4 text-red-500 text-sm">
+                        {error}
+                    </p>
+                )}
+                {success && (
+                    <p className="mt-4 text-green-500 text-sm">
+                        {success}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
 };
 
 export default CreateTag;
