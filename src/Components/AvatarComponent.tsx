@@ -14,7 +14,7 @@ const AvatarComponent: React.FC<AvatarProps> = ({ src, fallback, size = 'md' }) 
 
   return (
     <Avatar className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-200`}>
-      <AvatarImage src={src} alt="User Avatar" />
+      <AvatarImage src={src} alt="User Avatar"   className="rounded-full object-cover " />
       <AvatarFallback className="flex items-center justify-center text-gray-500">
         {fallback}
       </AvatarFallback>
