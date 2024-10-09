@@ -15,7 +15,7 @@ import {
 
 } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
-import ToggleTheme from "../ToggleTheme";
+
 import { adminLogout } from "../../redux/slices/adminSlice";
 
 const AdminNavBar = () => {
@@ -73,7 +73,7 @@ const navigate=useNavigate()
         </IconButton>
         </Link>
       </nav>
-      <ToggleTheme />
+     
     </div>
   );
 };
