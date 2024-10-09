@@ -1,4 +1,4 @@
-import { IconButton } from "@radix-ui/themes";
+import { IconButton, Popover } from "@radix-ui/themes";
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from "../../redux/store/store";
 import {
@@ -14,9 +14,11 @@ import {
 } from "react-icons/hi2";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ToggleTheme from "../ToggleTheme";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "../../services/Api/axiosInstance";
 import { logout } from "../../redux/slices/authSlice";
 import AvatarComponent from "../AvatarComponent";
+import DashBoardSideBar, { Feature } from "./DashBoardSideBar";
+import { useState } from "react";
 
 const Navbar = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
@@ -25,6 +27,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [currentView, setCurrentView] = useState<string>('dashboard'); 
   const handleLogout = async () => {
     await axiosInstance.post('/users/logout', {}, { withCredentials: true });
     dispatch(logout());
@@ -34,16 +37,42 @@ const Navbar = () => {
   const isActive = (path: string) => {
     return location.pathname === path ? "text-blue-600" : darkMode ? 'text-white' : 'text-gray-600';
   };
+  const sidebarFeatures: Record<string, Feature[]> = {
+    dashboard: [
+      { label: 'Dashboard', path: '/dashboard' },
+      { label: 'Settings', path: '/profile' },
+    ],
+  };
+  
 
   return (
     <div
       className={`h-screen w-16 flex flex-col justify-around items-center py-10 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
     >
-      <Link to="/profile">
+     
         <div className="flex flex-col items-center space-y-4">
-          <AvatarComponent size="md" src={user?.image} fallback={user?.username?.charAt(0)} />
+        <Popover.Root>
+          <Popover.Trigger>
+            <div className=" cursor-pointer">
+            <AvatarComponent
+              size="sm"
+              src={user?.image}
+              fallback={user?.username?.charAt(0)}
+            />
+            </div>
+          </Popover.Trigger>
+
+          <Popover.Content
+            side="bottom"
+            align="start"
+            className="bg-white rounded-lg shadow-lg p-4 z-50"
+          >
+             <DashBoardSideBar features={sidebarFeatures[currentView]} />
+          </Popover.Content>
+        </Popover.Root>
+          
         </div>
-      </Link>
+   
 
       <nav className="flex flex-col space-y-6">
         <Link to="/">
