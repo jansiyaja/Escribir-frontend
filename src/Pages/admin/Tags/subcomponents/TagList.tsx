@@ -5,6 +5,7 @@ import { Table } from '@radix-ui/themes';
 import Modal from '../../../../Components/Modal';
 import { Tag } from '../../../../Interfaces/Components';
 import ToastComponent from '../../../../Components/ToastNotification';
+import { handleAxiosError } from '../../../../utils/errorHandling';
 
 
 const TagList = () => {
@@ -59,8 +60,10 @@ const TagList = () => {
                 setToastMessage('Tag successfully deleted!');
                 setToastType('success');
                 setToastOpen(true);
-            } catch (error: any) {
-                setError('Failed to delete tag');
+            } catch (error) {
+
+                const errorMessage = handleAxiosError(error);
+                setError(errorMessage);
                 setToastMessage('Failed to delete tag');
                 setToastType('error');
                 setToastOpen(true);
