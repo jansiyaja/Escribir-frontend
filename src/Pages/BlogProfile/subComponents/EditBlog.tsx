@@ -5,6 +5,7 @@ import { BlogPostCardProps } from '../../../Interfaces/Components';
 import ReactQuill from 'react-quill'; 
 import 'react-quill/dist/quill.snow.css'; 
 import ToastComponent from '../../../Components/ToastNotification';
+import { handleAxiosError } from '../../../utils/errorHandling';
 
 const EditBlog: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -58,18 +59,23 @@ const EditBlog: React.FC = () => {
 
         try {
             const response = await axiosInstance.put(`/blog/blogeditor/${id}`, updatedBlogPost, { withCredentials: true });
-            setToastMessage('Blog post updated successfully!');
-            setToastType('success');
-            setToastOpen(true);
+            if(response.status==200){
+                setToastMessage('Blog post updated successfully!');
+                setToastType('success');
+                setToastOpen(true);
+    
+               
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 1000); 
 
-           
-            setTimeout(() => {
-                navigate('/dashboard');
-            }, 1000); 
+            }
+          
 
         } catch (err) {
-            console.error('Failed to update blog post', err);
-            setToastMessage('Failed to update blog post');
+            const errorMessage=handleAxiosError(err)
+          
+            setToastMessage(errorMessage);
             setToastType('error');
             setToastOpen(true);
         }
