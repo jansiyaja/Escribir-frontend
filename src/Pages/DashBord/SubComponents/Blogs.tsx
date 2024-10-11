@@ -64,12 +64,8 @@ const Blogs: React.FC = () => {
     };
 
     const handleEdit = (id: string) => {
-        const postToEdit = filteredPosts.find(post => post._id === id);
-        if (postToEdit) {
-            navigate("/blog", { state: { post: postToEdit } }); 
-        }
-       
-    };
+        navigate(`/editblog/${id}`);
+    }
 
     const handleDeleteConfirmation = async () => {
         if (postToDelete) {
