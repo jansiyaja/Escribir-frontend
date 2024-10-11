@@ -1,7 +1,5 @@
 import { ModalProps } from "../Interfaces/Components";
 
-
-
 const Modal: React.FC<ModalProps> = ({
     isOpen,
     onClose,
@@ -20,17 +18,26 @@ const Modal: React.FC<ModalProps> = ({
                 >
                     ✖
                 </button>
-                {confirmMessage ? (
-                    <div>
-                        <p>{confirmMessage}</p>
-                        <div className="flex justify-end mt-4">
-                            <button onClick={onClose} className="mr-2 bg-gray-300 px-4 py-2 rounded">Cancel</button>
-                            <button onClick={() => { if (onConfirm) onConfirm(); onClose(); }} className="bg-red-500 text-white px-4 py-2 rounded">Confirm</button>
-                        </div>
+                <div>
+                  
+                    {confirmMessage && <p className="mb-4">{confirmMessage}</p>}
+
+                    
+                    {children}
+
+                    <div className="flex justify-end mt-4">
+                        <button onClick={onClose} className="mr-2 bg-gray-300 px-4 py-2 rounded">Cancel</button>
+                        <button 
+                            onClick={() => { 
+                                if (onConfirm) onConfirm(); 
+                                onClose(); 
+                            }} 
+                            className="bg-red-500 text-white px-4 py-2 rounded"
+                        >
+                            Confirm
+                        </button>
                     </div>
-                ) : (
-                    children
-                )}
+                </div>
             </div>
         </div>
     );
