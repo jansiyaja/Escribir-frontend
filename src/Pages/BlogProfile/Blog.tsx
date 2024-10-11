@@ -15,6 +15,7 @@ const Blog: React.FC<CommonBlogProps> = ({ page }) => {
     
       case 'singleblog':
         return <SingleBlog />; 
+    
       default:
         return <div>Page not found</div>;
     }
