@@ -1,76 +1,104 @@
 import { useSelector } from "react-redux";
-import ProfileHeader from "./SubComponents/ProfileHeader";
 import { RootState } from "../../redux/store/store";
 import { useState } from "react";
+import ProfileHeader from "./SubComponents/ProfileHeader";
 import Blogs from "./SubComponents/Blogs";
 import Followers from "./SubComponents/Followers";
 import Following from "./SubComponents/Following";
+import { Layout, Pen, Users, UserPlus } from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const [currentView, setCurrentView] = useState<string>('Blogs');
 
-  const [currentView, setCurrentView] = useState<string>('Blogs'); 
-
-  const sidebarItems: string[] = ['Blogs', 'Followers', 'Following'];
-
+  const sidebarItems = [
+    { name: 'Blogs', icon: <Pen size={20} /> },
+    { name: 'Followers', icon: <Users size={20} /> },
+    { name: 'Following', icon: <UserPlus size={20} /> },
+  ];
 
   const renderContent = () => {
     switch (currentView) {
       case 'Blogs':
-        return (
-          <div className="p-4">
-            <Blogs />
-          </div>
-        );
+        return <Blogs />;
       case 'Followers':
-        return (
-          <div className="p-4">
-            <Followers />
-          </div>
-        );
+        return <Followers />;
       case 'Following':
-        return (
-          <div className="p-4">
-            <Following />
-          </div>
-        );
+        return <Following />;
       default:
-        return <div className="p-4">Select a category from the sidebar.</div>;
+        return <div className="text-gray-500">Select a category from the sidebar.</div>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-100 flex flex-col items-center">
-      <div className="p-6 w-full max-w-4xl">
-        <ProfileHeader
-          username={user?.username}
-          bio={user?.bio}
-          imageUrl={user?.image}
-        />
-
-      </div>
-
-      <div className="flex w-full max-w-4xl bg-white rounded-lg shadow-lg">
-    
-        <div className="w-1/4 p-4 bg-gray-100 border-r border-gray-300">
-          <ul className="space-y-4">
-            {sidebarItems.map((item) => (
-              <li
-                key={item}
-                className={`cursor-pointer p-2 rounded ${
-                  currentView === item ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'
-                }`}
-                onClick={() => setCurrentView(item)}
-              >
-                {item}
-              </li>
-            ))}
-          </ul>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="container mx-auto px-4 py-8">
+     
+        <div className="bg-white rounded-2xl shadow-lg mb-8 overflow-hidden">
+          <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-600">
+            <div className="absolute -bottom-16 left-8">
+              <img
+                src={user?.image || '/api/placeholder/100/100'}
+                alt={user?.username}
+                className="w-32 h-32 rounded-full border-4 border-white shadow-lg"
+              />
+            </div>
+          </div>
+          <div className="pt-20 pb-6 px-8">
+            <ProfileHeader
+              username={user?.username}
+              bio={user?.bio}
+              imageUrl={user?.image}
+            />
+          </div>
         </div>
 
-    
-        <div className="w-3/4 p-4">
-          {renderContent()} 
+     
+        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="flex">
+          
+            <div className="w-64 border-r border-gray-200">
+              <div className="p-4">
+                <div className="flex items-center space-x-2 mb-6">
+                  <Layout className="text-blue-500" size={24} />
+                  <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
+                </div>
+                <nav>
+                  {sidebarItems.map((item) => (
+                    <button
+                      key={item.name}
+                      onClick={() => setCurrentView(item.name)}
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-150 ${
+                        currentView === item.name
+                          ? 'bg-blue-50 text-blue-600'
+                          : 'text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className={currentView === item.name ? 'text-blue-500' : 'text-gray-400'}>
+                        {item.icon}
+                      </span>
+                      <span className="font-medium">{item.name}</span>
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+
+          
+            <div className="flex-1 p-8">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold text-gray-800">{currentView}</h1>
+                <p className="text-gray-500">
+                  {currentView === 'Blogs' && 'Manage and view your blog posts'}
+                  {currentView === 'Followers' && 'People who follow you'}
+                  {currentView === 'Following' && 'People you follow'}
+                </p>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-6">
+                {renderContent()}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
