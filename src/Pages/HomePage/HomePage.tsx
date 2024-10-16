@@ -12,15 +12,15 @@ const HomePage: React.FC = () => {
     const {darkMode}  =  useSelector(( state:RootState)=>state.theme);
 
     return (
-        <>
-            <div className={`min-h-screen flex items-center justify-center ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
+        
+            <div className={`min-h-screen flex items-center justify-around ${darkMode ? 'bg-gray-900' : 'bg-gradient-to-r from-blue-100 to-purple-100'}`}>
                
                 <main className="p-5">
-        <BlogList /> 
+           <BlogList /> 
         
-      </main>
+          </main>
             </div>
-        </>
+    
     );
 };
 
