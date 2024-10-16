@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { useNavigate } from 'react-router-dom';
 import { BlogPostCardProps } from '../../../Interfaces/Components';
+import { CreativeBlogLoading } from '../../../Components/Fallback';
 
 const BlogList: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostCardProps[]>([]);
@@ -71,8 +72,12 @@ const BlogList: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-lg font-semibold text-gray-600">Loading...</div>
+      <div className="space-y-8">
+        <CreativeBlogLoading>
+          Preparing Your Writing Canvas
+        </CreativeBlogLoading>
+        
+        
       </div>
     );
   }
@@ -118,7 +123,7 @@ const BlogList: React.FC = () => {
       )}
 
       {latestPost && (
-        <div className="mb-8 w-full max-w-5xl">
+        <div className="mb-8 w-full max-w-5xl ">
           <FeaturedBlogPost
             _id={latestPost._id}
             heading={latestPost?.heading}
@@ -135,12 +140,12 @@ const BlogList: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl cursor-pointer">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl cursor-pointer border-cyan-100  ">
         {filteredPosts.slice().map((post) => {
 
 
           return (
-            <div onClick={() => handleSingleBlog(post._id)} key={post._id}>
+            <div onDoubleClick={() => handleSingleBlog(post._id)} key={post._id}>
               <BlogPostCard
                 _id={post._id}
                 tag={post.tag}
@@ -149,7 +154,8 @@ const BlogList: React.FC = () => {
                 createdAt={post.createdAt}
                 author_id={{
                   image: post.author_id.image,
-                  username: post.author_id.username
+                  username: post.author_id.username,
+                  _id:post.author_id._id
                 }}
               />
             </div>
