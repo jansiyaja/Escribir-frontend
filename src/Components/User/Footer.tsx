@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <footer className="bg-gray-100 text-gray-800 py-2">
       <div className="container mx-auto flex justify-between items-center px-4">
         
-        {/* Avatar Image */}
+     
         <div className="flex items-center space-x-4">
           <Avatar
             size="9"
@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Current Year */}
+   
         <div className="text-sm">
           © {new Date().getFullYear() === 2024 ? "2024" : new Date().getFullYear()} Escriber. All rights reserved.
         </div>
