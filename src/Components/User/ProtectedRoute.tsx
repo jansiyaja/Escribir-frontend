@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store'; 
 import Navbar from './Navbar';
 
+
 const ProtectedRoute: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
@@ -18,8 +19,11 @@ const ProtectedRoute: React.FC = () => {
             <Navbar /> 
             <div className="flex-1 p-5 overflow-auto">
                 <Outlet /> 
+                
             </div>
+            
         </div>
+        
     );
 };
 

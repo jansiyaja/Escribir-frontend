@@ -7,7 +7,7 @@ import { AvatarProps } from '../Interfaces/Components';
 const AvatarComponent: React.FC<AvatarProps> = ({ src, fallback, size = 'md' }) => {
  
   const sizeClasses = {
-    sm: 'w-8 h-8 text-sm',
+    sm: 'w-8 h-6 text-sm',
     md: 'w-12 h-12 text-lg',
     lg: 'w-16 h-16 text-xl',
   };

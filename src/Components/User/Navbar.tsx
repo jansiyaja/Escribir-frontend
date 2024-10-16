@@ -48,14 +48,15 @@ const Navbar = () => {
   return (
     <div
       className={`h-screen w-16 flex flex-col justify-around items-center py-10 ${darkMode ? 'bg-gray-900' : 'bg-gray-100'}`}
-    >
+    > 
+    
      
         <div className="flex flex-col items-center space-y-4">
         <Popover.Root>
           <Popover.Trigger>
             <div className=" cursor-pointer">
             <AvatarComponent
-              size="sm"
+              size='sm'
               src={user?.image}
               fallback={user?.username?.charAt(0)}
             />

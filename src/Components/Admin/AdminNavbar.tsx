@@ -5,7 +5,7 @@ import axiosInstance from "../../services/Api/axiosInstance";
 
 import {
   HiOutlineHome,
-
+  HiOutlineDocument,
   HiOutlinePencilSquare,
   HiOutlineBell,
   HiOutlineCog8Tooth,
@@ -55,6 +55,12 @@ const navigate=useNavigate()
           <HiOutlinePencilSquare className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>
         </Link>
+        <Link to={'/repotedList'}>
+        <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
+          <HiOutlineDocument className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
+        </IconButton>
+        </Link>
+        
         <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
           <HiOutlineUserGroup className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>

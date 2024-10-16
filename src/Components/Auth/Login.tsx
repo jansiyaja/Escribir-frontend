@@ -1,14 +1,10 @@
-
+import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
 import UseLogin from "../Hooks/UseLogin";
 import PasswordToogle from "../PasswordToggle";
 
-
-
-
- const Login: React.FC = () => {
- const {login,loading,error,handleChange,handleLogin}=UseLogin()
-
+const Login: React.FC = () => {
+  const { login, loading, error, handleChange, handleLogin } = UseLogin();
 
   return (
     <form onSubmit={handleLogin}>
@@ -28,8 +24,6 @@ import PasswordToogle from "../PasswordToggle";
         {error.email && <p className="text-red-500 text-sm mt-1">{error.email}</p>}
       </div>
 
-     
-
       <PasswordToogle
         id="password"
         name="password"
@@ -45,12 +39,19 @@ import PasswordToogle from "../PasswordToggle";
         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
         disabled={loading}
       >
-       
         <Spinner size="h-5 w-5" color="text-white" text="Verifying..." isLoading={loading} />
-       
         {!loading && "Login"}
       </button>
+
       {error.generic && <p className="text-red-500 text-sm mt-1 text-center">{error.generic}</p>}
+
+    
+      <p className="text-center mt-4">
+        Don't have an account?{" "}
+        <Link to="/register" className="text-blue-500 hover:underline">
+          Register here
+        </Link>
+      </p>
     </form>
   );
 };

@@ -22,7 +22,7 @@ const ToggleTheme = () => {
   return (
     <>
       <IconButton onClick={handleDarkMode}  className="bg-white p-2 rounded-lg hover:bg-gray-200">
-      <CurrentIcon  className="text-gray-600 w-8 h-8"/>
+      <CurrentIcon  className="text-gray-600 w-6 h-6"/>
      </IconButton>
     </>
   );
