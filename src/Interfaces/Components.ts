@@ -52,6 +52,7 @@
   interface Author {
     image: string;
     username: string;
+    _id?:string;
   }
 
   export interface BlogPostCardProps {
@@ -89,3 +90,4 @@ export interface Tag {
   name: string;
   createdAt: string;
 }
+

@@ -44,3 +44,12 @@ export interface AuthState{
    
     
 }
+
+export interface Notification {
+  _id: string;
+  createdAt: string;
+  fromUserId: User;  
+  isRead: boolean;
+  message: string;
+  userId: User;      
+}
