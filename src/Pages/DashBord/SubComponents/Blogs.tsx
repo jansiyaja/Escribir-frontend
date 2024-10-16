@@ -9,8 +9,11 @@ import { handleAxiosError } from "../../../utils/errorHandling";
 import Modal from "../../../Components/Modal";
 import ToastComponent from "../../../Components/ToastNotification";
 
+interface BlogsProps {
+    authorId:string
+}
 
-const Blogs: React.FC = () => {
+const Blogs: React.FC<BlogsProps> = ({ authorId }) => {
     const [filteredPosts, setFilteredPosts] = useState<BlogPostCardProps[]>([]);
     const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
     const [noBlogsFound, setNoBlogsFound] = useState(false); 
@@ -28,7 +31,7 @@ const Blogs: React.FC = () => {
     useEffect(() => {
         const fetchBlogs = async () => {
             try {
-                const response = await axiosInstance.get(`/blog/your-blog/${userId}`, { withCredentials: true });
+                const response = await axiosInstance.get(`/blog/your-blog/${authorId}`, { withCredentials: true });
                 
                 if (response.data.blogs) {
                     setFilteredPosts(response.data.blogs);

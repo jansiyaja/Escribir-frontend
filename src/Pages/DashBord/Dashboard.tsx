@@ -4,8 +4,9 @@ import { useState } from "react";
 import ProfileHeader from "./SubComponents/ProfileHeader";
 import Blogs from "./SubComponents/Blogs";
 import Followers from "./SubComponents/Followers";
-import Following from "./SubComponents/Following";
-import { Layout, Pen, Users, UserPlus } from 'lucide-react';
+
+import { Layout, Pen, Users,Bookmark  } from 'lucide-react';
+import Saved from "./SubComponents/Saved";
 
 const Dashboard = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -13,18 +14,19 @@ const Dashboard = () => {
 
   const sidebarItems = [
     { name: 'Blogs', icon: <Pen size={20} /> },
-    { name: 'Followers', icon: <Users size={20} /> },
-    { name: 'Following', icon: <UserPlus size={20} /> },
+    { name: 'Connections', icon: <Users size={20} /> },
+    { name: 'Saved', icon: <Bookmark size={20} /> },
+   
   ];
 
   const renderContent = () => {
     switch (currentView) {
       case 'Blogs':
-        return <Blogs />;
-      case 'Followers':
+        return <Blogs authorId={user?._id || 'default'} />
+      case 'Connections':
         return <Followers />;
-      case 'Following':
-        return <Following />;
+     case 'Saved':
+      return <Saved/>
       default:
         return <div className="text-gray-500">Select a category from the sidebar.</div>;
     }
@@ -84,14 +86,15 @@ const Dashboard = () => {
               </div>
             </div>
 
-          
+           
             <div className="flex-1 p-8">
               <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">{currentView}</h1>
                 <p className="text-gray-500">
                   {currentView === 'Blogs' && 'Manage and view your blog posts'}
-                  {currentView === 'Followers' && 'People who follow you'}
-                  {currentView === 'Following' && 'People you follow'}
+                  {currentView === 'Connections' && 'People who follow you'}
+                  {currentView === 'Saved' && 'Your saved Post'}
+                 
                 </p>
               </div>
               <div className="bg-gray-50 rounded-xl p-6">
