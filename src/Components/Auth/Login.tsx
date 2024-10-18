@@ -34,14 +34,18 @@ const Login: React.FC = () => {
         label="Password"
       />
 
-      <button
-        type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        disabled={loading}
-      >
-        <Spinner size="h-5 w-5" color="text-white" text="Verifying..." isLoading={loading} />
-        {!loading && "Login"}
-      </button>
+   <button
+  type="submit"
+  className="bg-blue-500 text-white px-4 py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 rounded-lg hover:bg-blue-600 transition w-full sm:w-auto"
+  disabled={loading}
+>
+  {loading ? (
+    <Spinner size="h-5 w-5" color="text-white" text="Verifying..." isLoading={loading} />
+  ) : (
+    "Login"
+  )}
+</button>
+
 
       {error.generic && <p className="text-red-500 text-sm mt-1 text-center">{error.generic}</p>}
 

@@ -10,6 +10,7 @@ import { User } from "../../Interfaces/slice";
 import { handleAxiosError } from "../../utils/errorHandling";
 import useToast from "../../Components/Hooks/UseToast";
 import ToastComponent from "../../Components/ToastNotification";
+import { sendFollowNotification } from "../../services/Api/socketService";
 
 const Conections = () => {
     const { authorId } = useParams<{ authorId: string }>();
@@ -24,7 +25,7 @@ const Conections = () => {
         { name: 'Blogs', icon: <Pen size={20} /> },
       
     ];
-
+const userId=user?._id
     useEffect(() => {
         const fetchUserData = async () => {
             setLoading(true);
@@ -60,12 +61,23 @@ const Conections = () => {
     }, [authorId]);
 
     const handleFollow = async () => {
+        if (!authorId) {
+            console.log("Auther Id is required");
+            
+            return;
+        }
+         if (!userId) {
+            console.log("Auther Id is required");
+            
+            return;
+        }
         try {
             const response = await axiosInstance.post(`users/follow/${authorId}`, {}, { withCredentials: true });
             if (response.status === 200) {
                 triggerToast("Sent follow request", "success");
                 fetchFollowStatus(); 
                 setIsMutualFollowing(response.data.followStatus)
+                sendFollowNotification(userId, authorId);
             }
         } catch (error) {
             const errorMessage = handleAxiosError(error);

@@ -5,19 +5,28 @@ import { RootState } from '../../../redux/store/store';
 import { BlogPostCardProps } from '../../../Interfaces/Components';
 import { HiMiniEllipsisVertical } from "react-icons/hi2";
 import { useNavigate } from 'react-router-dom';
-
-const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl, createdAt, author_id }) => {
+import {EmailShareButton,WhatsappShareButton,LinkedinShareButton,WhatsappIcon,EmailIcon,LinkedinIcon} from 'react-share';
+ 
+const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl, createdAt, author_id ,_id}) => {
   const formattedDate = new Date(createdAt).toISOString().split('T')[0];
   const { darkMode } = useSelector((state: RootState) => state.theme);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Simulated loading state
+  const [shareOpen, setShareOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); 
   const navigate = useNavigate();
 
-  // Simulate loading time (replace this with actual logic to set loading state)
+  const shareUrl =  `${window.location.origin}/singleblog/${_id}`;
+  const title = heading;
+
+ 
+  const handleShareAction = () => {
+    setDropdownOpen(false); 
+  };
+
   React.useEffect(() => {
     const timeout = setTimeout(() => {
-      setIsLoading(false); // Simulate data being loaded after 1.5 seconds
-    }, 1500);
+      setIsLoading(false); 
+    }, 100);
     return () => clearTimeout(timeout);
   }, []);
 
@@ -35,8 +44,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl
 
   return (
     <div className={`p-4 rounded shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-blue-50'}`}>
-      
-      {/* Cover Image with Skeleton */}
+   
       {isLoading ? (
         <Skeleton className="w-full h-48 rounded" />
       ) : (
@@ -47,7 +55,6 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl
         {isLoading ? <Skeleton className="w-16 h-4" /> : tag}
       </span>
 
-      {/* Heading with Skeleton */}
       <h2
         className={`text-xl font-bold mt-2 ${darkMode ? 'text-gray-100' : 'text-gray-800'} overflow-hidden text-ellipsis whitespace-nowrap`}
         title={heading}
@@ -56,24 +63,23 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl
       </h2>
 
       <div className="flex items-center mt-2">
-        {/* Author Avatar with Skeleton */}
+      
         {isLoading ? (
           <Skeleton className="w-8 h-8 rounded-full" />
         ) : (
           <Avatar size="3" src={author_id.image} fallback="A" radius="full" onClick={handleAvatarClick} />
         )}
 
-        {/* Author Username with Skeleton */}
         <span className={`ml-2 text-sm ${darkMode ? 'text-gray-200' : 'text-gray-800'}`}>
           {isLoading ? <Skeleton className="w-20 h-4" /> : author_id.username}
         </span>
 
-        {/* Created Date with Skeleton */}
+     
         <span className={`ml-auto text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
           {isLoading ? <Skeleton className="w-16 h-4" /> : formattedDate}
         </span>
 
-        {/* Ellipsis Icon */}
+     
         <span
           className={`ml-auto text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
           onClick={handleEllipsisClick}
@@ -86,10 +92,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl
             <ul className="py-1">
               <li
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => {
-                  console.log('Share clicked');
-                  setDropdownOpen(false);
-                }}
+                onClick={() => setShareOpen(!shareOpen)}
               >
                 Share
               </li>
@@ -103,6 +106,23 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ heading, tag, coverImageUrl
                 Save
               </li>
             </ul>
+
+            {shareOpen && (
+              <div className="px-4 py-2 border-t border-gray-200 bg-white">
+               
+                <EmailShareButton url={shareUrl} subject={title} className="w-full flex justify-center py-2" onClick={handleShareAction}>
+                  <EmailIcon size={32} round />
+                </EmailShareButton>
+              
+                <WhatsappShareButton url={shareUrl} title={title} className="w-full flex justify-center py-2" onClick={handleShareAction}>
+                  <WhatsappIcon size={32} round />
+                </WhatsappShareButton>
+              
+                <LinkedinShareButton url={shareUrl} title={title} className="w-full flex justify-center py-2" onClick={handleShareAction}>
+                  <LinkedinIcon size={32} round />
+                </LinkedinShareButton>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -4,10 +4,11 @@ import React from 'react';
 interface FollowCardProps {
   username: string;
   image?: string;
+  message?: string;
   createdAt: string;
 }
 
-const FollowCard: React.FC<FollowCardProps> = ({ username, image, createdAt }) => {
+const FollowCard: React.FC<FollowCardProps> = ({ username, image,message, createdAt }) => {
   return (
     <div className="mb-4 bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center">
       <img
@@ -18,8 +19,10 @@ const FollowCard: React.FC<FollowCardProps> = ({ username, image, createdAt }) =
 
       <div className="flex-grow">
         <div className="flex items-center">
-          <h2 className="text-lg font-semibold">New Follower: {username}</h2>
+          <h2 className="text-lg font-semibold">{username}</h2>
+         
         </div>
+         <p>{message}</p>
         <p className="text-sm text-gray-500">
           Follower since: {new Date(createdAt).toLocaleString()}
         </p>

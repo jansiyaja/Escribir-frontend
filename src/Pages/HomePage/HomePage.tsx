@@ -1,15 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useSelector } from 'react-redux';
 import { RootState } from "../../redux/store/store"; 
 
 import BlogList from "../BlogProfile/subComponents/BlogList";
+import { loginUser } from "../../services/Api/socketService";
 
-const HomePage: React.FC = () => {
-  
+   const HomePage: React.FC = () => {
+   const { user } = useSelector((state: RootState) => state.auth);
 
 
-    const {darkMode}  =  useSelector(( state:RootState)=>state.theme);
+    const { darkMode } = useSelector((state: RootState) => state.theme);
+       useEffect(() => {
+           const userId = user?._id
+           if (!userId) {
+               return
+           }
+       loginUser(userId) 
+    })
 
     return (
         

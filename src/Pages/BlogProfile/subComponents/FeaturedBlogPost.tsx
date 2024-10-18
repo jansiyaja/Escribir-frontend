@@ -14,7 +14,7 @@ const FeaturedBlogPost: React.FC<BlogPostCardProps> = ({
   return (
     <div className="relative rounded-2xl overflow-hidden shadow-xl w-full h-64 bg-white">
       
-      {/* Cover Image with Skeleton */}
+    
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
@@ -29,7 +29,7 @@ const FeaturedBlogPost: React.FC<BlogPostCardProps> = ({
         
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            {/* Author Image with Skeleton */}
+         
             {isLoading ? (
               <Skeleton className="w-8 h-8 rounded-full" />
             ) : (
@@ -39,24 +39,24 @@ const FeaturedBlogPost: React.FC<BlogPostCardProps> = ({
                 className="w-8 h-8 rounded-full object-cover"
               />
             )}
-            {/* Author Name with Skeleton */}
+         
             <span className="text-sm font-medium text-white">
               {isLoading ? <Skeleton className="h-4 w-20" /> : username}
             </span>
           </div>
 
-          {/* Tag */}
+      
           <span className="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-lg">
             {tag}
           </span>
         </div>
 
-        {/* Heading with Skeleton */}
+   
         <h1 className="text-2xl font-bold text-white leading-tight mb-2">
           {isLoading ? <Skeleton className="h-6 w-3/4" /> : heading}
         </h1>
 
-        {/* CreatedAt with Skeleton */}
+      
         <div className="flex justify-between items-center text-sm text-gray-300">
           <span>
             {isLoading ? <Skeleton className="h-4 w-16" /> : new Date(createdAt).toLocaleDateString()}

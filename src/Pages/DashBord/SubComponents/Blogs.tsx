@@ -96,7 +96,7 @@ const Blogs: React.FC<BlogsProps> = ({ authorId }) => {
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
             {noBlogsFound ? (
                 <div className="flex flex-col items-center justify-center w-full">
                     <p className="text-lg font-semibold">No blogs found for this user.</p>

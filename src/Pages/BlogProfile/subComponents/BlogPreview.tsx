@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import AvatarComponent from '../../../Components/AvatarComponent';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw'; 
 
 const BlogPreview: React.FC<BlogPreviewProps> = ({ heading, image, tag, content, onClose }) => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -37,10 +39,9 @@ const BlogPreview: React.FC<BlogPreviewProps> = ({ heading, image, tag, content,
       
           <h1 className="text-3xl font-bold mb-2">{heading}</h1>
           <p className="text-sm text-gray-500 mb-4">Tag: <span className="font-medium text-blue-600">{tag}</span></p>
-          <div
-            className="prose max-h-96 overflow-y-auto" 
-            dangerouslySetInnerHTML={{ __html: content }} 
-          />
+           <div className="text-lg text-gray-700 leading-relaxed">
+           <ReactMarkdown rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
+    </div>
         </div>
       </div>
     </div>
