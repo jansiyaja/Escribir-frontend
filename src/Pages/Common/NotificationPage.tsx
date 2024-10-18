@@ -6,13 +6,13 @@ import useToast from '../../Components/Hooks/UseToast';
 import ToastComponent from '../../Components/ToastNotification';
 import FollowCard from './FollowCard';
 import { io } from 'socket.io-client';
-import { useNotification } from '../../Contexts/NotificationContext';
+
 
 
 const NotificationPage = () => {
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [notice, setNotice] = useState<Notification[]>([]);
-     const { incrementNotificationCount, resetNotificationCount } = useNotification();
+ 
     const { showToast, setShowToast, toastMessage, toastType, triggerToast } = useToast();
    
 
@@ -33,12 +33,7 @@ const NotificationPage = () => {
         };
     }, []);
 
-     useEffect(() => {
-    if (location.pathname === '/notifications') {
-      resetNotificationCount(); // Reset the count when navigating to this page
-    }
-  }, [location.pathname, resetNotificationCount]);
-
+ 
 
     useEffect(() => {
         const fetchNotifications = async () => {
