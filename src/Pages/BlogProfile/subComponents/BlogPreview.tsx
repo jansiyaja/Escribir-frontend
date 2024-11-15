@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw'; 
+import { ROUTES } from '../../../routes/Route';
 
 const BlogPreview: React.FC<BlogPreviewProps> = ({ heading, image, tag, content, onClose }) => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -17,7 +18,7 @@ const BlogPreview: React.FC<BlogPreviewProps> = ({ heading, image, tag, content,
         <div className="p-8">
       
           <div className="flex items-center mb-6">
-            <Link to="/profile" className="flex items-center mr-4">
+            <Link to={ROUTES.PROTECTED.PROFILE} className="flex items-center mr-4">
               <AvatarComponent size="lg" src={user?.image} fallback={user?.username?.charAt(0)} />
             </Link>
             <div className="flex flex-col">

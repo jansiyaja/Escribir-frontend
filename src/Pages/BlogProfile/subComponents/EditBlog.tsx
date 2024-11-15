@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axiosInstance from '../../../services/Api/axiosInstance';
 import { BlogPostCardProps } from '../../../Interfaces/Components'; 
 import ReactQuill from 'react-quill'; 
 import 'react-quill/dist/quill.snow.css'; 
 import ToastComponent from '../../../Components/ToastNotification';
 import { handleAxiosError } from '../../../utils/errorHandling';
+import { getSingleBlogEdit, updateBlogPost } from '../../../services/Api/blogApi';
+import { ROUTES } from '../../../routes/Route';
 
 const EditBlog: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,7 +22,7 @@ const EditBlog: React.FC = () => {
     useEffect(() => {
         const fetchBlogPost = async () => {
             try {
-                const response = await axiosInstance.get(`/blog/getblog/${id}`, { withCredentials: true });
+                const response = await getSingleBlogEdit(id)
                 setBlogPost(response.data.blog);
                 setStatus(response.data.blog.status || 'draft'); 
             } catch (err) {
@@ -57,8 +58,8 @@ const EditBlog: React.FC = () => {
 
         const updatedBlogPost = { ...blogPost, status };
 
-        try {
-            const response = await axiosInstance.put(`/blog/blogeditor/${id}`, updatedBlogPost, { withCredentials: true });
+        try { 
+            const response = await updateBlogPost(id,updatedBlogPost)
             if(response.status==200){
                 setToastMessage('Blog post updated successfully!');
                 setToastType('success');
@@ -66,7 +67,7 @@ const EditBlog: React.FC = () => {
     
                
                 setTimeout(() => {
-                    navigate('/dashboard');
+                    navigate(ROUTES.PROTECTED.DASHBOARD);
                 }, 1000); 
 
             }
@@ -146,7 +147,7 @@ const EditBlog: React.FC = () => {
                     />
                 </div>
 
-                {/* Radio buttons for post status */}
+               
                 <div className="mb-4">
                     <label className="block text-sm font-semibold text-gray-700">Status</label>
                     <label className="inline-flex items-center mr-4">

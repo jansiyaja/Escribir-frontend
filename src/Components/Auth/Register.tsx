@@ -1,5 +1,5 @@
 import React from "react";
-import useRegister from "../Hooks/UseRegister";
+import useRegister from "./Hooks/UseRegister";
 import Spinner from "../Spinner";
 
 import PasswordToogle from "../PasswordToggle";

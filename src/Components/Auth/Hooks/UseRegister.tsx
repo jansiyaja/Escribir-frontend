@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import axiosInstance from "../../services/Api/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import { IRegister,IErrorState } from "../../Interfaces/Auth";
+import { IRegister,IErrorState } from "../../../Interfaces/Auth";
 import axios from "axios";
+import { userRegister } from "../../../services/Api/userApi";
 
 
 
@@ -75,7 +75,7 @@ const useRegister = () => {
     setLoading(true);
 
     try {
-        const response = await axiosInstance.post("/users/register", register);
+        const response = await userRegister(register);
         console.log(response);
 
         if (response.status === 201) {

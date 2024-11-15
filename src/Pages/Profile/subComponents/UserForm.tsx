@@ -5,7 +5,7 @@ import { RootState } from '../../../redux/store/store';
 import axiosInstance from '../../../services/Api/axiosInstance';
 import { handleAxiosError } from '../../../utils/errorHandling';
 import FormField from './FormField'; 
-import useToast from '../../../Components/Hooks/UseToast';
+import useToast from '../../../Components/UseToast';
 import ToastComponent from '../../../Components/ToastNotification';
 import { User } from '../../../Interfaces/slice';
 import { setUser } from '../../../redux/slices/authSlice';

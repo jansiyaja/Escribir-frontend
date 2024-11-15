@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
-import UseLogin from "../Hooks/UseLogin";
+import UseLogin from "./Hooks/UseLogin";
 import PasswordToogle from "../PasswordToggle";
 
 const Login: React.FC = () => {

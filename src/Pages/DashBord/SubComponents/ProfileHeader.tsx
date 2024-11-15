@@ -14,8 +14,9 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ username, bio,  }) => {
 
     
   return (
-    <div className={`flex items-center p-4 ${darkMode ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-800'} rounded-lg shadow-md`}>
-     
+    <div
+      className={`flex flex-col md:flex-row items-center p-4 ${darkMode ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-800'} rounded-lg shadow-md`}
+    >
       <div>
         <h2 className="text-xl font-bold">{username}</h2>
         <p className="text-sm">{bio}</p>

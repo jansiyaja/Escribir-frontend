@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import axiosInstance from '../../../services/Api/axiosInstance';
 import BlogPreview from './BlogPreview';
 import { Tag } from '../../../Interfaces/Components';
 import ToastComponent from '../../../Components/ToastNotification';
 import { handleAxiosError } from '../../../utils/errorHandling';
+import { createBlogPost, listTags } from '../../../services/Api/blogApi';
 
 const CreateBlog = () => {
   const [showPreview, setShowPreview] = useState(false);
@@ -24,7 +24,7 @@ const CreateBlog = () => {
   useEffect(() => {
     const fetchTags = async () => {
       try {
-        const response = await axiosInstance.get('/blog/tags');
+        const response = await listTags()
         setTags(response.data);
       } catch (err) {
         setError('Failed to load tags');
@@ -52,14 +52,14 @@ const CreateBlog = () => {
       const status = isPublished ? 'published' : 'draft';
       formData.append('status', status);
 
-      await axiosInstance.post('/blog/blogeditor', formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await createBlogPost(formData);
+      if (response.status = 200) {
+        resetForm();
+        console.log("create blog success");
+        
+      }
 
-      resetForm();
+     
 
       if (isPublished) {
         setToastMessage('Blog published successfully!');
@@ -172,7 +172,7 @@ const CreateBlog = () => {
 
           <div className="flex justify-between mt-4">
             <button
-              onClick={() => savePost(false)} // Save as draft
+              onClick={() => savePost(false)} 
               className="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
               Save

@@ -4,16 +4,19 @@ import { Message, RawMessage } from "../../../Interfaces/Components";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
 import axiosInstance from "../../../services/Api/axiosInstance";
-import ChatHeader, { Receiver } from "./ChatHeader";
-import {
+
+import socket, {
   ReciveNewMessage,
   SendNewMessage,
+
   loginUser,
-} from "../../../services/Api/socketService";
+
+} from "../../../services/socketService";
 import EmojiPicker from "./EmojiPicker";
+import { UserFollow } from "./MessagesHeader";
 
 export interface ChatProps {
-  receiver: Receiver | null;
+  receiver: UserFollow | null;
 }
 
 const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
@@ -21,6 +24,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
     username: "",
     image: "",
     userId: "",
+    chatId:""
   };
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,8 +34,14 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
   const [chatId, setChatId] = useState<string | null>(null);
   const { user } = useSelector((state: RootState) => state.auth);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  
+  const [typingStatus, setTypingStatus] = useState(false); 
+  
+
 
   const recieverId = currentReceiver.userId;
+
+  
 
   useEffect(() => {
     if (user?.username) {
@@ -42,10 +52,12 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
 
   useEffect(() => {
     if (recieverId) {
+      console.log("chatId",chatId);
+      
       const fetchMessages = async () => {
         try {
           const response = await axiosInstance.get(
-            `users/messages/${recieverId}`,
+            `chat/messages/${currentReceiver.chatId}`,
             { withCredentials: true }
           );
           const messagesArray: RawMessage[] = Array.isArray(response.data)
@@ -92,6 +104,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
     };
 
     ReciveNewMessage(handleReactionNotification);
+ 
   }, []);
 
   const sendMessage = async () => {
@@ -116,7 +129,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
 
         try {
           await axiosInstance.post(
-            `/users/messages/${currentChatId}`,
+            `/chat/messages/${currentChatId}`,
             newMessage,
             { withCredentials: true }
           );
@@ -126,6 +139,8 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
         }
 
         setMessage("");
+
+    
       }
     }
   };
@@ -133,7 +148,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
   const createNewChat = async () => {
     try {
       const response = await axiosInstance.post(
-        `/users/newChat/${recieverId}`,
+        `/chat/newChat/${recieverId}`,
         { withCredentials: true }
       );
       const newChatId = response.data.chat._id;
@@ -145,12 +160,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
     return null;
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
+ 
 
   const toggleEmojiPicker = () => {
     setShowEmojiPicker((prev) => !prev);
@@ -160,9 +170,36 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
     setShowEmojiPicker(false);
   };
 
+const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputValue = e.target.value;
+  setMessage(inputValue);
+
+  if (inputValue) {
+    
+    socket.emit("typing", { receiverId: recieverId });
+  } else {
+   
+    socket.emit("stop-typing", { receiverId: recieverId });
+  }
+};
+useEffect(() => {
+  socket.on("typing-status", (data) => {
+   
+    if (data.receiverId === user?._id) {
+    
+      
+      setTypingStatus(data.isTyping); 
+    }
+  });
+
+  return () => {
+    socket.off("typing-status");
+  };
+}, [recieverId]);
+
   return (
     <div className="flex flex-col h-screen max-h-[800px] bg-white rounded-lg shadow-lg">
-      <ChatHeader receiver={receiver} />
+   
       <div className="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-50">
         {loading ? (
           <p>Loading messages...</p>
@@ -215,6 +252,7 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
             </div>
           ))
         )}
+     
       </div>
 
       <div className="p-4 border-t bg-white">
@@ -230,11 +268,12 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
             <Paperclip className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex-grow">
+              {typingStatus && <p>{receiver?.username} is typing...</p>}
             <input
               type="text"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+               onChange={handleTyping}
+              
               placeholder="Type a message..."
               className="w-full p-3 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
             />

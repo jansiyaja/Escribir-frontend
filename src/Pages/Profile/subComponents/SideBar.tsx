@@ -6,7 +6,7 @@ import { RootState } from "../../../redux/store/store";
 import axiosInstance from "../../../services/Api/axiosInstance";
 import ToastComponent from "../../../Components/ToastNotification";
 import { handleAxiosError } from "../../../utils/errorHandling";
-import useToast from "../../../Components/Hooks/UseToast";
+import useToast from "../../../Components/UseToast";
 import { setUser } from "../../../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { User } from "../../../Interfaces/slice";

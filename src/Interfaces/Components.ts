@@ -1,3 +1,5 @@
+import { LucideIcon } from "lucide-react";
+
  export  interface SpinnerProps {
     size: string;
     color: string;
@@ -5,6 +7,15 @@
     isLoading: boolean; 
   }
   
+
+  export interface Feature {
+  label: string;
+  path: string;
+}
+
+ export interface DashBoardSideBarProps {
+  features: Feature[];
+}
 
   export interface PasswordInputProps {
    
@@ -65,6 +76,36 @@
       
     content?:string
   }
+ export interface comment {
+    id?: string;
+    createdAt: string;
+    userId : string
+    content?:string
+  }
+export interface RawMessage {
+  Sender_id: {
+    username: string;
+    image: string;
+    _id:string
+  };
+  Content: string;
+  createdAt: string;
+  ReadBy?: boolean;
+  Chat: {
+    _id:string
+  }
+}
+
+export interface Message {
+  chatId?: string,
+  _id?:string,
+  username: string;
+  message: string;
+  image?: string;
+  timestamp: string;
+  status: "read" | "delivered" | "sent" | undefined;
+  sender?:string
+}
 
 
 
@@ -73,7 +114,6 @@
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-
   confirmMessage?: string;
   onConfirm?: () => void;
   children?: React.ReactNode; 
@@ -91,3 +131,22 @@ export interface Tag {
   createdAt: string;
 }
 
+/////////////////////////////////////////////////////////////////
+
+// fallback
+
+ export  interface FloatingIcon {
+  icon: LucideIcon;
+  color: string;
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  delay: number;
+}
+
+
+ export interface CreativeBlogLoadingProps {
+  children?: React.ReactNode;
+  className?: string;
+  subtitle?: string;
+  icons?: FloatingIcon[];
+  animationDuration?: number;
+}

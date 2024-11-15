@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "../../../services/Api/axiosInstance";
+
 import ToastComponent from "../../../Components/ToastNotification";
-import useToast from "../../../Components/Hooks/UseToast";
+import useToast from "../../../Components/UseToast";
 
 import FollowerCard from "../../Common/FollowCard";
+import { getFollowers } from "../../../services/Api/socialApi";
 
 interface Follower {
   _id: string;
@@ -23,7 +24,7 @@ const Followers = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axiosInstance.get("/users/getFollowers", { withCredentials: true });
+        const response = await getFollowers();
         if (response.status === 200) {
           setFollower(response.data);
           triggerToast("Fetching successfully", "success");
@@ -51,7 +52,7 @@ const Followers = () => {
             key={follow._id}
             username={follow.follower.username}
             image={follow.follower.image}
-            createdAt={follow.createdAt}
+           
           />
         ))
       )}

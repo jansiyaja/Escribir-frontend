@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { setUser } from '../../../redux/slices/authSlice';
 import { handleAxiosError } from '../../../utils/errorHandling';
-import useToast from '../../../Components/Hooks/UseToast';
+import useToast from '../../../Components/UseToast';
 import { User } from '../../../Interfaces/slice';
+import { getProfile } from '../../../services/Api/userApi';
 
 const useProfileHook = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -46,7 +47,7 @@ const useProfileHook = () => {
         triggerToast("Profile updated successfully", "success");
         setIsSaved(true);
 
-        const getResponse = await axiosInstance.get('/users/profile', { withCredentials: true });
+        const getResponse = await  getProfile()
         if (getResponse.status === 200) {
           dispatch(setUser(getResponse.data.user));
         }

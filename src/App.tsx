@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from "./Pages/HomePage/HomePage";
 import { useSelector } from 'react-redux';
+import { RootState } from './redux/store/store';
+
+import { SearchProvider } from './Contexts/SearchContext';
 import ProtectedRoute from './Components/User/ProtectedRoute';
+import AdminProtectedRoute from './Components/Admin/AdminProtectedRoute';
+
+import HomePage from "./Pages/HomePage/HomePage";
 import CommonPage from "./Pages/Common/AuthPage";
 import UserProfile from './Pages/Profile/UserProfile';
-import { RootState } from './redux/store/store';
-import './theme.css';
 import LoginPage from './Pages/admin/LoginPage';
-import AdminProtectedRoute from './Components/Admin/AdminProtectedRoute';
 import AdminDashboard from './Pages/admin/AdminDashBoard';
 import Blog from './Pages/BlogProfile/Blog';
 import Tags from './Pages/admin/Tags/Tags';
@@ -18,45 +20,67 @@ import Connections from './Pages/DashBord/Connections';
 import NotificationPage from './Pages/Common/NotificationPage';
 import SinglePage from './Pages/admin/Report/SubComponents/SinglePage';
 import Chat from './Pages/Chat/Chat';
-import { NotificationProvider } from './Contexts/NotificationContext';
+import About from './Pages/Common/About';
+import Contact from './Pages/Common/Contact';
+
+
+import './theme.css';
+import { ErrorBoundary } from './ErrorBoundary';
+
+import { ROUTES } from './routes/Route';
+import NotFound from './Pages/Common/NotFound';
+
+
 
 
 function App() {
   const { darkMode } = useSelector((state: RootState) => state.theme);
 
   return (
-    <NotificationProvider> 
-      <div className={darkMode ? 'dark bg-black text-white' : 'bg-white text-black'}>
-        <Router>
-          <Routes>
-            <Route path="/register" element={<CommonPage page="register" />} />
-            <Route path="/OTP-Verification" element={<CommonPage page="otp" />} />
-            <Route path="/login" element={<CommonPage page="login" />} />
+    <SearchProvider>
+      <div className={` ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
+        <ErrorBoundary>
+          <Router>
+            <Routes>
+            
+              <Route path={ROUTES.PUBLIC.REGISTER} element={<CommonPage page="register" />} />
+              <Route path={ROUTES.PUBLIC.OTP_VERIFICATION} element={<CommonPage page="otp" />} />
+              <Route path={ROUTES.PUBLIC.LOGIN} element={<CommonPage page="login" />} />
+              <Route path={ROUTES.PUBLIC.ADMIN_LOGIN} element={<LoginPage />} />
+            
+           
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/notifications" element={<NotificationPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/connections/:authorId" element={<Connections />} />
-              <Route path='/blog' element={<Blog page='blogeditor' />} />
-              <Route path='/editblog/:id' element={<EditBlogPost />} />
-              <Route path="/singleblog/:id" element={<Blog page='singleblog' />} />
-              <Route path='/Chat' element={<Chat />} />
-            </Route>
+             
+              <Route element={<ProtectedRoute />}>
+                <Route path={ROUTES.PROTECTED.HOME} element={<HomePage />} />
+                <Route path={ROUTES.PROTECTED.ABOUT} element={<About />} />
+                <Route path={ROUTES.PROTECTED.CONTACT} element={<Contact />} />
 
-            <Route element={<AdminProtectedRoute />}>
-              <Route path='/adminDashBord' element={<AdminDashboard />} />
-              <Route path='/tagList' element={<Tags />} />
-              <Route path='/repotedList' element={<Report />} />
-              <Route path="/single/:id" element={<SinglePage />} />
-            </Route>
+                <Route path={ROUTES.PROTECTED.PROFILE} element={<UserProfile />} />
+                <Route path={ROUTES.PROTECTED.NOTIFICATIONS} element={<NotificationPage />} />
+                <Route path={ROUTES.PROTECTED.DASHBOARD} element={<Dashboard />} />
+                <Route path={ROUTES.PROTECTED.CONNECTIONS} element={<Connections />} />
+                <Route path={ROUTES.PROTECTED.BLOG_EDITOR} element={<Blog page="blogeditor" />} />
+                <Route path={ROUTES.PROTECTED.EDIT_BLOG} element={<EditBlogPost />} />
+                <Route path={ROUTES.PROTECTED.SINGLE_BLOG} element={<Blog page="singleblog" />} />
+                <Route path={ROUTES.PROTECTED.CHAT} element={<Chat />} />
+              </Route>
 
-            <Route path="/adminLogin" element={<LoginPage />} />
-          </Routes>
-        </Router>
+            
+              <Route element={<AdminProtectedRoute />}>
+                <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+                <Route path={ROUTES.ADMIN.TAGS} element={<Tags />} />
+                <Route path={ROUTES.ADMIN.REPORTS} element={<Report />} />
+                <Route path={ROUTES.ADMIN.SINGLE_REPORT} element={<SinglePage />} />
+              </Route>
+
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </ErrorBoundary>
       </div>
-    </NotificationProvider>
+    </SearchProvider>
   );
 }
 

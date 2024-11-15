@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100">
+ 
+  <path d="M20 70 Q 150 20, 280 70" stroke="#e0e0e0" fill="none" stroke-width="2"/>
+  
+ 
+  <text x="150" y="60" text-anchor="middle" font-family="Georgia" font-size="48" fill="#fff">
+    <tspan>Escribir</tspan>
+  </text>
+  
+ 
+  <path d="M245 65 l5,-5 l5,5 l-5,-15 z" fill="#2c3e50"/>
+  
+
+  <path d="M70 75 Q 150 65, 230 75" stroke="#2c3e50" fill="none" stroke-width="1.5"/>
+</svg>

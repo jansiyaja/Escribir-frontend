@@ -1,15 +1,9 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { Link } from "react-router-dom";
+import { DashBoardSideBarProps } from "../../Interfaces/Components";
 
-export interface Feature {
-  label: string;
-  path: string;
-}
 
-interface DashBoardSideBarProps {
-  features: Feature[];
-}
 
 const DashBoardSideBar: React.FC<DashBoardSideBarProps> = ({ features }) => {
   const { darkMode } = useSelector((state: RootState) => state.theme);

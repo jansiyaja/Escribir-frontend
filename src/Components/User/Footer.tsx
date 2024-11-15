@@ -1,32 +1,36 @@
-import React from 'react';
-import { Avatar } from '@radix-ui/themes';
-import logo from '../../assets/Images/logoo.png'
+import React from "react";
+import { Link } from "react-router-dom";
 
+import lightLogo from "../../assets/Images/Logo.svg"
+import darkLogo from "../../assets/Images/LogoB.svg"
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store/store";
 
 const Footer: React.FC = () => {
+  const { darkMode } = useSelector((state: RootState) => state.theme);
+
   return (
-    <footer className="bg-gray-100 text-gray-800 py-2">
-      <div className="container mx-auto flex justify-between items-center px-4">
-        
-     
+    <footer className={`bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 py-4`}>
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4 space-y-4 md:space-y-0">
         <div className="flex items-center space-x-4">
-          <Avatar
-            size="9"
-            src={logo}
-            fallback="E"
-            radius="full"
-            style={{ objectFit: 'cover' }}
-          />
-          <div>
-            <h2 className="text-lg font-semibold font-bodoni">Escriber</h2>
-            <p className="text-sm text-gray-400">Your trusted blog author</p>
-          </div>
+          <Link to="/" className="flex-shrink-0">
+            <img src={darkMode ? darkLogo : lightLogo} alt="Logo" className="h-10" />
+          
+          </Link>
         </div>
 
-   
-        <div className="text-sm">
-          © {new Date().getFullYear() === 2024 ? "2024" : new Date().getFullYear()} Escriber. All rights reserved.
+        <div className="text-center md:text-left">
+          <h2 className="text-lg font-semibold font-bodoni">Escriber</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Your trusted blog author
+          </p>
         </div>
+      </div>
+
+      <div className="mt-4">
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+          © {new Date().getFullYear()} Escriber. All rights reserved.
+        </p>
       </div>
     </footer>
   );

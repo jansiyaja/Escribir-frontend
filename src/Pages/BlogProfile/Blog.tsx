@@ -22,9 +22,10 @@ const Blog: React.FC<CommonBlogProps> = ({ page }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-100 flex flex-col items-center justify-center">
-      {renderComponent()}
-    </div>
+     <div className="`min-h-screen w-full bg-blue-400 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-10 border border-gray-100">
+ {renderComponent()}
+                </div>
+   
   );
 };
 

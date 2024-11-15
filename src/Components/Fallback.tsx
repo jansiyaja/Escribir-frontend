@@ -1,21 +1,8 @@
 import React from 'react';
-import { Pencil, Image, Tag, Coffee, LucideIcon } from 'lucide-react';
-
-interface FloatingIcon {
-  icon: LucideIcon;
-  color: string;
-  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-  delay: number;
-}
+import { Pencil, Image, Tag, Coffee } from 'lucide-react';
+import { CreativeBlogLoadingProps, FloatingIcon } from '../Interfaces/Components';
 
 
-interface CreativeBlogLoadingProps {
-  children?: React.ReactNode;
-  className?: string;
-  subtitle?: string;
-  icons?: FloatingIcon[];
-  animationDuration?: number;
-}
 
 const defaultIcons: FloatingIcon[] = [
   { icon: Coffee, color: 'text-amber-600', position: 'top-right', delay: 0 },

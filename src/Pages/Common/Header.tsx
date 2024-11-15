@@ -1,9 +1,16 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Bell, User, Menu, X } from 'lucide-react';
+import { useSearch } from '../../Contexts/SearchContext';
+import { ROUTES } from '../../routes/Route';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { searchTerm, setSearchTerm } = useSearch(); 
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   return (
     <header className="bg-white shadow-md">
@@ -11,24 +18,30 @@ const Header = () => {
         <div className="flex items-center justify-between">
         
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
+            <Link to={ROUTES.PROTECTED.HOME} className="text-2xl font-bold text-blue-600">
               Escribir
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-gray-600 hover:text-blue-600">Home</Link>
-            <Link to="/about" className="text-gray-600 hover:text-blue-600">About</Link>
-            <Link to="/contact" className="text-gray-600 hover:text-blue-600">Contact</Link>
+            <Link to={ROUTES.PROTECTED.HOME} className="text-gray-600 hover:text-blue-600">Home</Link>
+            <Link to={ROUTES.PUBLIC.ABOUT} className="text-gray-600 hover:text-blue-600">About</Link>
+            <Link to={ROUTES.PUBLIC.CONTACT} className="text-gray-600 hover:text-blue-600">Contact</Link>
             <button className="text-gray-600 hover:text-blue-600">Connection</button>
           </nav>
 
-          {/* Search and Icons */}
+         
           <div className="hidden md:flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-blue-600">
-              <Search size={20} />
-            </button>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search..."
+                className="pl-8 pr-3 py-2 border rounded-lg shadow-md text-gray-600"
+              />
+              <Search size={20} className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-600" />
+            </div>
             <button className="text-gray-600 hover:text-blue-600">
               <Bell size={20} />
             </button>
@@ -37,7 +50,6 @@ const Header = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
           <button 
             className="md:hidden text-gray-600 hover:text-blue-600"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -46,13 +58,13 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+       
         {isMenuOpen && (
           <div className="md:hidden mt-4">
             <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-gray-600 hover:text-blue-600">Home</Link>
-              <Link to="/about" className="text-gray-600 hover:text-blue-600">About</Link>
-              <Link to="/contact" className="text-gray-600 hover:text-blue-600">Contact</Link>
+             <Link to={ROUTES.PROTECTED.HOME} className="text-gray-600 hover:text-blue-600">Home</Link>
+             <Link to={ROUTES.PUBLIC.ABOUT} className="text-gray-600 hover:text-blue-600">About</Link>
+              <Link to={ROUTES.PUBLIC.CONTACT}className="text-gray-600 hover:text-blue-600">Contact</Link>
               <button className="text-gray-600 hover:text-blue-600">Connection</button>
               <button className="text-gray-600 hover:text-blue-600 flex items-center">
                 <Search size={20} className="mr-2" /> Search

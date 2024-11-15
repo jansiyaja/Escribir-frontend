@@ -2,8 +2,10 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store'; 
-import Navbar from './Navbar';
-import Header from '../../Pages/Common/Header';
+
+import Header from '../Header';
+import Footer from './Footer';
+
 
 
 const ProtectedRoute: React.FC = () => {
@@ -17,14 +19,15 @@ const ProtectedRoute: React.FC = () => {
 
     return (
         
-        <div className="flex h-screen">
+        <div className="min-h-screen ">
           
-            <Navbar /> 
-            <div className="flex-1 p-5 overflow-auto">
-                   <Header/>
+            <Header /> 
+            <div className="flex-1 overflow-auto">
+               
                 <Outlet /> 
                 
             </div>
+            <Footer/>
             
         </div>
         

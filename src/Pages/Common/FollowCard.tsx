@@ -5,28 +5,18 @@ interface FollowCardProps {
   username: string;
   image?: string;
   message?: string;
-  createdAt: string;
+ 
 }
 
-const FollowCard: React.FC<FollowCardProps> = ({ username, image,message, createdAt }) => {
+const FollowCard: React.FC<FollowCardProps> = ({ username, image,message,  }) => {
   return (
-    <div className="mb-4 bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex items-center">
+    <div className='flex' >
       <img
         src={image || "default_image_url"}
         alt={`${username}'s avatar`}
-        className="w-16 h-16 rounded-full mr-4"
+        className="w-8 h-8 rounded-full mr-4"
       />
-
-      <div className="flex-grow">
-        <div className="flex items-center">
-          <h2 className="text-lg font-semibold">{username}</h2>
-         
-        </div>
-         <p>{message}</p>
-        <p className="text-sm text-gray-500">
-          Follower since: {new Date(createdAt).toLocaleString()}
-        </p>
-      </div>
+        <p> <span>{message}</span> </p>
     </div>
   );
 };

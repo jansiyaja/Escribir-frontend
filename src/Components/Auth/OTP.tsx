@@ -1,7 +1,7 @@
 
 import Spinner from "../Spinner";
 
-import UseOTP from '../Hooks/UseOTP';
+import UseOTP from './Hooks/UseOTP';
 const OTP = () => {
     const { error,loading,setOtp,otp ,handleVerifyOtp,resendOtp ,timer,rendering} = UseOTP();
 

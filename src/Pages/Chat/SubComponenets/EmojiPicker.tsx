@@ -8,7 +8,7 @@ const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect }) => {
   const emojis = ["😊", "😂", "😍", "😢", "😡", "😱", "👍", "👎", "🎉", "❤️"];
 
   return (
-    <div className="absolute bottom-10  bg-white border rounded-lg shadow-lg p-2">
+    <div className="  bg-white border rounded-lg shadow-lg p-2">
       <div className="grid grid-cols-5 gap-2">
         {emojis.map((emoji, index) => (
           <button

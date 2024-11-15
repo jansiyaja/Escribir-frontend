@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import BlogPostCard from './BlogPostCard';
-import axiosInstance from '../../../services/Api/axiosInstance';
+
 import FeaturedBlogPost from './FeaturedBlogPost';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import { useNavigate } from 'react-router-dom';
 import { BlogPostCardProps } from '../../../Interfaces/Components';
 import { CreativeBlogLoading } from '../../../Components/Fallback';
+import { listBlogs } from '../../../services/Api/blogApi';
+import { ROUTES } from '../../../routes/Route';
 
 const BlogList: React.FC = () => {
   const [blogPosts, setBlogPosts] = useState<BlogPostCardProps[]>([]);
@@ -23,7 +25,7 @@ const BlogList: React.FC = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axiosInstance.get('/blog');
+        const response = await listBlogs()
         console.log(response.data);
 
         setBlogPosts(response.data);
@@ -65,7 +67,7 @@ const BlogList: React.FC = () => {
     setFilteredPosts(updatedPosts);
   };
   const handleSingleBlog = (id: string) => {
-    navigate(`/singleblog/${id}`);
+    navigate(ROUTES.PROTECTED.SINGLE_BLOG.replace(":id", id));
   };
 
   const uniqueTags = Array.from(new Set(blogPosts.map(post => post.tag)));
@@ -93,7 +95,7 @@ const BlogList: React.FC = () => {
   const latestPost = blogPosts.length > 0 ? blogPosts[0] : null;
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center p-5 ${darkMode ? 'bg-gray-800' : 'bg-gradient-to-r from-blue-100 to-purple-100'}`}>
+    <div className={`min-h-screen flex flex-col items-center justify-center p-5 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
       <input
         type="text"
         placeholder="Search by title..."
