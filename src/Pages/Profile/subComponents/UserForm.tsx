@@ -53,7 +53,10 @@ const ProfilePage: React.FC = () => {
         setIsSaved(true); 
 
         const getResponse = await axiosInstance.get('/users/profile', { withCredentials: true });
+     
+        
         if (getResponse.status === 200) {
+             console.log("this responeese");
          dispatch(setUser(getResponse.data.user));
         }
       } else {

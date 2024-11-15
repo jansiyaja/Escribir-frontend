@@ -77,8 +77,10 @@ axiosInstance.interceptors.response.use(
 
         // Handle 401 Unauthorized errors
         if (error.response.status === 401) {
+            console.log(error);
+            
             console.log('Access token is invalid. Logging out...');
-            window.location.href = '/login';
+            // window.location.href = '/login';
         }
 
         return Promise.reject(error);

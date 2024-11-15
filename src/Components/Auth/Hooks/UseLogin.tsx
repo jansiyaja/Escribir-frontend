@@ -6,6 +6,8 @@ import { IErrorState } from "../../../Interfaces/Auth";
 import { setCredentials } from "../../../redux/slices/authSlice";
 import { userLogin } from "../../../services/Api/userApi";
 import useToast from "../../UseToast"; 
+import { ROUTES } from "../../../routes/Route";
+import { handleAxiosError } from "../../../utils/errorHandling";
 
 const UseLogin = () => {
   const dispatch = useDispatch();
@@ -69,12 +71,13 @@ const UseLogin = () => {
             refreshToken: response.data.refreshToken,
           })
         );
-        navigate("/");
+        navigate(ROUTES.PROTECTED.HOME);
+   
         triggerToast("Login successful!", "success"); // Trigger success toast
       }
     } catch (error) {
-      console.error("Login error:", error);
-      setError({ generic: "Login failed. Please try again." });
+      const errorMessage = handleAxiosError(error);
+      console.log(errorMessage);
       triggerToast("Login failed. Please try again.", "error"); // Trigger error toast
     } finally {
       setLoading(false);

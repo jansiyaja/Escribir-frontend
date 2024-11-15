@@ -47,8 +47,10 @@ const useProfileHook = () => {
         triggerToast("Profile updated successfully", "success");
         setIsSaved(true);
 
-        const getResponse = await  getProfile()
+        const getResponse = await getProfile()
+        
         if (getResponse.status === 200) {
+          
           dispatch(setUser(getResponse.data.user));
         }
       } else {

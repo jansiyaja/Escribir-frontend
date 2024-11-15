@@ -11,9 +11,14 @@ import Footer from './Footer';
 const ProtectedRoute: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const isAuthenticated = !!user; 
+    console.log("user --- ",user);
+    
 
+    const isAuthenticated = !!user; 
+     console.log("isAuthenticated--- ",isAuthenticated);
     if (!isAuthenticated) {
+        console.log("hererejdhfa'ksdhf'sdaohfa;isjdhf;aisuduhf;iasdgc;isdc");
+        
         return <Navigate to="/login" replace />;
     }
 

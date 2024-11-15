@@ -4,13 +4,13 @@
     OTP_VERIFICATION: "/OTP-Verification",
     LOGIN: "/login",
     ADMIN_LOGIN: "/adminLogin",
-  
+      ABOUT: "/about",
+    CONTACT: "/contact",
   },
    PROTECTED: {
      HOME: "/",
       
-    ABOUT: "/about",
-    CONTACT: "/contact",
+
     PROFILE: "/profile",
     NOTIFICATIONS: "/notifications",
     DASHBOARD: "/dashboard",

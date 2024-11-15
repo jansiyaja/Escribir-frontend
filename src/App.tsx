@@ -47,14 +47,14 @@ function App() {
               <Route path={ROUTES.PUBLIC.OTP_VERIFICATION} element={<CommonPage page="otp" />} />
               <Route path={ROUTES.PUBLIC.LOGIN} element={<CommonPage page="login" />} />
               <Route path={ROUTES.PUBLIC.ADMIN_LOGIN} element={<LoginPage />} />
-            
+              <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
+              <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
            
 
              
               <Route element={<ProtectedRoute />}>
                 <Route path={ROUTES.PROTECTED.HOME} element={<HomePage />} />
-                <Route path={ROUTES.PROTECTED.ABOUT} element={<About />} />
-                <Route path={ROUTES.PROTECTED.CONTACT} element={<Contact />} />
+              
 
                 <Route path={ROUTES.PROTECTED.PROFILE} element={<UserProfile />} />
                 <Route path={ROUTES.PROTECTED.NOTIFICATIONS} element={<NotificationPage />} />
