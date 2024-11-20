@@ -5,7 +5,7 @@ import store from '../../redux/store/store';
 
 
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+const baseURL = "https://escribir1.furnishop.site";
 
  const axiosInstance = axios.create({
     baseURL,
