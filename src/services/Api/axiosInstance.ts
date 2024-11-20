@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { setCredentials } from '../../redux/slices/authSlice'; 
 import store from '../../redux/store/store';
-
+axios.defaults.withCredentials = true;  
 
 
 const baseURL = "https://escribir1.furnishop.site";
@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const state = store.getState(); 
         const accessToken = state.auth.accessToken; 
-        
+        console.log("accessToKen",accessToken)
         if (accessToken) {
            
             config.headers['Authorization'] = `Bearer ${accessToken}`;
