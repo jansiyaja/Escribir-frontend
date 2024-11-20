@@ -103,7 +103,7 @@ axiosInstance.interceptors.response.use(
     } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
         store.dispatch(setCredentials({ user: null, accessToken: null, refreshToken: null }));
-        window.location.href = '/login';  // Redirect to login after failed token refresh
+      //  window.location.href = '/login';  // Redirect to login after failed token refresh
     }
 }
 
