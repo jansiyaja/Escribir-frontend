@@ -5,7 +5,7 @@ import { setCredentials } from '../../redux/slices/adminSlice';
 
 
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+const baseURL = "https://escribir1.furnishop.site"
 
  const axiosAdminInstance = axios.create({
     baseURL,
