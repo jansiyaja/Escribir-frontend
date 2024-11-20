@@ -26,8 +26,8 @@ export interface User {
 
 export interface AuthState{
     user:User| null;
-    accessToken:string;
-    refreshToken:string;
+    accessToken:string|null;
+    refreshToken:string|null;
 
     }
 
