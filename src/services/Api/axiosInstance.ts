@@ -3,10 +3,9 @@ import axios from 'axios';
 import { setCredentials } from '../../redux/slices/authSlice'; 
 import store from '../../redux/store/store';
 
-axios.defaults.withCredentials = true;  
 
 
-const baseURL = "https://escribir1.furnishop.site";
+const baseURL = import.meta.env.VITE_API_BASE_URL;
 
  const axiosInstance = axios.create({
     baseURL,
@@ -17,7 +16,6 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const state = store.getState(); 
         const accessToken = state.auth.accessToken; 
-        console.log("accessToKen",accessToken)
         if (accessToken) {
            
             config.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -77,35 +75,13 @@ axiosInstance.interceptors.response.use(
             }
         }
 
-       if (error.response.status === 401) {
-    console.log('Access token is invalid. Trying to refresh...');
-
-    try {
-        const response = await axiosInstance.post('/users/verify-token', {
-            withCredentials: true,  // Ensure cookies are sent
-        });
-
-        if (response.status === 200) {
-            const newAccessToken = response.data.accessToken;
-            const newRefreshToken = response.data.refreshToken;
-
-            // Store new tokens in Redux or localStorage
-            store.dispatch(setCredentials({
-                user: store.getState().auth.user,  // Keep user data intact
-                accessToken: newAccessToken,
-                refreshToken: newRefreshToken,
-            }));
-
-            // Retry the original request with the new token
-            originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-            return axiosInstance(originalRequest);
+        // Handle 401 Unauthorized errors
+        if (error.response.status === 401) {
+            console.log(error);
+            
+            console.log('Access token is invalid. Logging out...');
+            // window.location.href = '/login';
         }
-    } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
-        store.dispatch(setCredentials({ user: null, accessToken: null, refreshToken: null }));
-      //  window.location.href = '/login';  // Redirect to login after failed token refresh
-    }
-}
 
         return Promise.reject(error);
     }
