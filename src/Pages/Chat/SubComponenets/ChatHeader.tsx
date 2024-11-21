@@ -63,100 +63,134 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     setIncomingCall({ from, type: callType, offer });
   };
 
-  const initializePeerConnection = () => {
-    peerConnection.current = new RTCPeerConnection();
+const initializePeerConnection = () => {
+  if (peerConnection.current) return; // Avoid reinitializing the peer connection
 
-    peerConnection.current.ontrack = (event) => {
-      const [stream] = event.streams;
-      setRemoteStream(stream);
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = stream;
-      }
-    };
+  // Create a new peer connection
+  peerConnection.current = new RTCPeerConnection();
 
-    if (localStream) {
-      localStream.getTracks().forEach((track) =>
-        peerConnection.current?.addTrack(track, localStream)
+  // Handle remote stream when tracks are received
+  peerConnection.current.ontrack = (event) => {
+    const [stream] = event.streams;
+    setRemoteStream(stream);
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = stream;
+    }
+  };
+
+  // Handle ICE candidates
+  peerConnection.current.onicecandidate = (event) => {
+    if (event.candidate) {
+      // Send the ICE candidate to the other peer
+      socket.emit("ice-candidate", {
+        receiverId: selectedChat?.userId,  // Assuming you have the receiver ID
+        candidate: event.candidate,
+      });
+    }
+  };
+
+  // Listen for the connection state change and log it
+  peerConnection.current.oniceconnectionstatechange = () => {
+    console.log("ICE connection state:", peerConnection.current?.iceConnectionState);
+  };
+
+  // Add the local tracks to the peer connection
+  if (localStream) {
+    localStream.getTracks().forEach((track) => {
+      peerConnection.current?.addTrack(track, localStream);
+    });
+  }
+};
+const handleStartCall = async (type: CallType) => {
+  if (!receiverId) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: type === "video",
+    });
+
+    setLocalStream(stream);
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+    }
+
+    initializePeerConnection();
+
+    const offer = await peerConnection.current!.createOffer({
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: type === "video",
+    });
+
+    await peerConnection.current!.setLocalDescription(offer);
+
+    socket.emit("call-user", {
+      receiverId,
+      offer,
+      callType: type,
+    });
+
+    setCallStatus("calling");
+    setShowModal(true);
+  } catch (error) {
+    console.error("Error starting call:", error);
+    setCallStatus("idle");
+  }
+};
+
+const handleAcceptCall = async () => {
+  if (!incomingCall) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: incomingCall.type === "video",
+    });
+
+    setLocalStream(stream);
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
+    }
+
+    initializePeerConnection();
+
+    if (incomingCall.offer) {
+      await peerConnection.current!.setRemoteDescription(
+        new RTCSessionDescription(incomingCall.offer)
       );
     }
-  };
 
-  const handleStartCall = async (type: CallType) => {
-    if (!receiverId) return;
+    const answer = await peerConnection.current!.createAnswer();
+    await peerConnection.current!.setLocalDescription(answer);
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: type === "video",
-      });
+    socket.emit("answer-call", {
+      from: incomingCall.from.userId,
+      answer,
+      callType: incomingCall.type,
+    });
 
-      setLocalStream(stream);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
+    // Update the call status and remove the incoming call
+    setCallStatus("in-call");
+    setIncomingCall(null);
 
-      initializePeerConnection();
-
-      const offer = await peerConnection.current!.createOffer({
-        offerToReceiveAudio: true,
-        offerToReceiveVideo: type === "video",
-      });
-
-      await peerConnection.current!.setLocalDescription(offer);
-
-      socket.emit("call-user", {
-        receiverId,
-        offer,
-        callType: type,
-      });
-
-      setCallStatus("calling");
-      setShowModal(true);
-    } catch (error) {
-      console.error("Error starting call:", error);
-      setCallStatus("idle");
+    // Remote stream handling
+    if (peerConnection.current) {
+      peerConnection.current.ontrack = (event) => {
+        const [stream] = event.streams;
+        setRemoteStream(stream);
+        if (remoteVideoRef.current) {
+          remoteVideoRef.current.srcObject = stream;
+        }
+      };
     }
-  };
 
-  const handleAcceptCall = async () => {
-    if (!incomingCall) return;
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: incomingCall.type === "video",
-      });
-
-      setLocalStream(stream);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-
-      initializePeerConnection();
-
-      if (incomingCall.offer) {
-        await peerConnection.current!.setRemoteDescription(
-          new RTCSessionDescription(incomingCall.offer)
-        );
-      }
-
-      const answer = await peerConnection.current!.createAnswer();
-      await peerConnection.current!.setLocalDescription(answer);
-
-      socket.emit("answer-call", {
-        from: incomingCall.from.userId,
-        answer,
-        callType: incomingCall.type,
-      });
-
-      setCallStatus("in-call");
-      setIncomingCall(null);
-      setShowModal(true);
-    } catch (error) {
-      console.error("Error accepting call:", error);
-      setCallStatus("idle");
-    }
-  };
+    setShowModal(true);
+  } catch (error) {
+    console.error("Error accepting call:", error);
+    setCallStatus("idle");
+  }
+};
+;
 
   const handleEndCall = () => {
     if (localStream) {
