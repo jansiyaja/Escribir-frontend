@@ -87,59 +87,69 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     }
   };
 
-  const handleStartCall = async (type: CallType) => {
-    if (!receiverId) return;
+const handleStartCall = async (type: CallType) => {
+  if (!receiverId) return;
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: type === "video",
-      });
+  try {
+    // Get the local media stream (audio/video)
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: type === "video",
+    });
 
-      setLocalStream(stream);
-      setRemoteStream(stream)
-     
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-
-      initializePeerConnection();
-      await startCall(receiverId, type,peerConnection.current!);
-      setCallStatus("calling");
-     
-      setShowModal(true); 
-    } catch (error) {
-      console.error("Error starting call:", error);
-      setCallStatus("idle");
+    setLocalStream(stream); // Store the local stream for use
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream; // Attach to local video element
     }
-  };
 
-  const handleAcceptCall = async () => {
-    if (incomingCall) {
+    initializePeerConnection(); // Initialize PeerConnection
+    // Add local tracks to PeerConnection
+    stream.getTracks().forEach((track) =>
+      peerConnection.current?.addTrack(track, stream)
+    );
 
-      setCallStatus("in-call");
-     
+    // Create an offer and start signaling
+    await startCall(receiverId, type, peerConnection.current!);
+    setCallStatus("calling");
+    setShowModal(true); // Show the modal for the call
+  } catch (error) {
+    console.error("Error starting call:", error);
+    setCallStatus("idle");
+  }
+};
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: incomingCall.type === "video",
-      });
-      setLocalStream(stream);
-       setLocalStream(stream);
-     
 
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
+const handleAcceptCall = async () => {
+  if (!incomingCall) return;
 
-      initializePeerConnection();
-      handleCallAnswered(peerConnection.current!);
-       setRemoteStream(stream);
+  try {
+    setCallStatus("in-call");
 
-      setIncomingCall(null);
-      setShowModal(true); 
+    // Get the local media stream
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: incomingCall.type === "video",
+    });
+
+    setLocalStream(stream); // Store local stream
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream; // Attach to local video element
     }
-  };
+
+    initializePeerConnection(); // Initialize PeerConnection
+    // Add local tracks to PeerConnection
+    stream.getTracks().forEach((track) =>
+      peerConnection.current?.addTrack(track, stream)
+    );
+
+    handleCallAnswered(peerConnection.current!); // Handle answer signaling
+    setIncomingCall(null); // Clear the incoming call state
+    setShowModal(true); // Show the modal for the call
+  } catch (error) {
+    console.error("Error accepting call:", error);
+    setCallStatus("idle");
+  }
+};
 
   useEffect(() => {
   
