@@ -43,7 +43,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const [showModal, setShowModal] = useState(false);
 
-  // Listen for incoming calls
   useEffect(() => {
     socket.on("receive-call", handleIncomingCall);
     return () => {
@@ -64,12 +63,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
 const initializePeerConnection = () => {
-  if (peerConnection.current) return; // Avoid reinitializing the peer connection
+  if (peerConnection.current) return; 
 
-  // Create a new peer connection
+
   peerConnection.current = new RTCPeerConnection();
 
-  // Handle remote stream when tracks are received
   peerConnection.current.ontrack = (event) => {
     const [stream] = event.streams;
     setRemoteStream(stream);
@@ -78,23 +76,22 @@ const initializePeerConnection = () => {
     }
   };
 
-  // Handle ICE candidates
+
   peerConnection.current.onicecandidate = (event) => {
     if (event.candidate) {
-      // Send the ICE candidate to the other peer
+    
       socket.emit("ice-candidate", {
-        receiverId: selectedChat?.userId,  // Assuming you have the receiver ID
+        receiverId: selectedChat?.userId,  
         candidate: event.candidate,
       });
     }
   };
 
-  // Listen for the connection state change and log it
   peerConnection.current.oniceconnectionstatechange = () => {
     console.log("ICE connection state:", peerConnection.current?.iceConnectionState);
   };
 
-  // Add the local tracks to the peer connection
+
   if (localStream) {
     localStream.getTracks().forEach((track) => {
       peerConnection.current?.addTrack(track, localStream);
