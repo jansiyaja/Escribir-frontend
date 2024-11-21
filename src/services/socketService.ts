@@ -78,104 +78,149 @@ export const unsubscribeFromNotifications = () => {
 
 
 
+// export const startCall = async (receiverId: string|undefined, callType: 'audio' | 'video') => {
+//     peerConnection = new RTCPeerConnection(configuration);
+
+//     const mediaStream = await navigator.mediaDevices.getUserMedia({
+//         audio: true,
+//         video: callType === 'video',
+//     });
+
+//     mediaStream.getTracks().forEach((track) => {
+//         console.log(track,mediaStream);
+        
+//         peerConnection?.addTrack(track, mediaStream);
+//         console.log("added track successfully");
+        
+//     });
+
+//     peerConnection.onicecandidate = (event) => {
+//         if (event.candidate) {
+//             socket.emit('ice-candidate', { receiverId, candidate: event.candidate });
+//         }
+//     };
+
+//     const offer = await peerConnection.createOffer();
+//     await peerConnection.setLocalDescription(offer);
+//     socket.emit('call-user', { receiverId, offer, callType });
+// };
+
+
+// export const receiveCall = (callback: (callInfo: { from: any; callType: 'audio' | 'video' }) => void) => {
+//     socket.on('receive-call', async ({ from, offer, callType }) => {
+//         callback({ from, callType });
+//         peerConnection = new RTCPeerConnection(configuration);
+
+//         peerConnection.onicecandidate = (event) => {
+//             if (event.candidate) {
+//                 socket.emit('ice-candidate', { receiverId: from.userId, candidate: event.candidate });
+//             }
+//         };
+
+//         const mediaStream = await navigator.mediaDevices.getUserMedia({
+//             audio: true,
+//             video: callType === 'video',
+            
+//         });
+//         console.log("Local audio track:", mediaStream.getAudioTracks());
+//         mediaStream.getTracks().forEach((track) => {
+//               console.log(track,mediaStream);
+//              console.log("recived track successfully");
+//             peerConnection?.addTrack(track, mediaStream);
+//         });
+
+//         await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+//         const answer = await peerConnection.createAnswer();
+//         await peerConnection.setLocalDescription(answer);
+//         socket.emit('answer-call', { to: from.userId, answer });
+//     });
+// };
+
+
+// export const handleCallAnswered = () => {
+//     socket.on('call-answered', async ({ answer }) => {
+//         console.log(`Call answered received:`, answer);
+//         if (peerConnection) {
+//             await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+//         }
+//     });
+// };
+
+// export const handleIceCandidate = () => {
+//     socket.on('ice-candidate', ({ candidate }) => {
+//         if (peerConnection) {
+//             peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+//         }
+//     });
+// };
 
 
 
 
 
-type CallType = 'audio' | 'video';
+type CallType = "audio" | "video";
 interface Receiver {
-    userId: string;
-    username: string;
-    image: string;
+  userId: string;
+  username: string;
+  image: string;
 }
 interface CallInfo {
-    from: Receiver;
-    offer: RTCSessionDescriptionInit;
-    callType: CallType;
+  from: Receiver;
+  offer: RTCSessionDescriptionInit;
+  callType: CallType;
 }
 
+
+
 export const startCall = async (
-    receiverId: string,
-    callType: CallType,
-    peerConnection: RTCPeerConnection
-) => {
-    try {
-        const offer = await peerConnection.createOffer({
-            offerToReceiveAudio: true,
-            offerToReceiveVideo: callType === 'video',
-        });
-        await peerConnection.setLocalDescription(offer);
-
-        socket.emit('call-user', { receiverId, offer, callType });
-    } catch (error) {
-        console.error('Error starting call:', error);
-    }
-};
-
-export const receiveCall = (
-    peerConnection: RTCPeerConnection,
-    localStream: MediaStream,
-    callback: (callInfo: CallInfo) => void
-) => {
-    socket.on('receive-call', async ({ from, offer, callType }: CallInfo) => {
-        try {
-            callback({ from, offer, callType });
-
-            await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-
-            localStream.getTracks().forEach((track) => {
-                peerConnection.addTrack(track, localStream);
-            });
-
-            const answer = await peerConnection.createAnswer();
-            await peerConnection.setLocalDescription(answer);
-
-            socket.emit('answer-call', { receiverId: from.userId, answer });
-        } catch (error) {
-            console.error('Error handling incoming call:', error);
-        }
-    });
-};
-
-export const handleCallAnswered = async (
-  peerConnection: RTCPeerConnection,
-  answer: RTCSessionDescriptionInit
+  receiverId: string,
+  callType: CallType,
+  peerConnection: RTCPeerConnection
 ) => {
   try {
-    if (peerConnection) {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
-    }
+ 
+    const offer = await peerConnection.createOffer({
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: callType === "video",
+    });
+    await peerConnection.setLocalDescription(offer);
+
+    socket.emit("call-user", { receiverId, offer, callType });
   } catch (error) {
-    console.error("Error handling call answer:", error);
+    console.error("Error starting call:", error);
   }
 };
 
 
-export const endCall = (receiverId?: string) => {
+export const receiveCall = (
+  callback: (callInfo: CallInfo) => void
+) => {
+  socket.on("receive-call", async ({ from, offer, callType }: CallInfo) => {
+    callback({ from, offer, callType });
+  });
+};
+
+export const handleCallAnswered = (peerConnection: RTCPeerConnection) => {
+  socket.on("call-answered", async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
     if (peerConnection) {
-        peerConnection.getSenders().forEach((sender) => sender.track?.stop());
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+    }
+  });
+};
+
+export const endCall = () => {
+   
+     if (peerConnection && peerConnection.getSenders) {
+        peerConnection.getSenders().forEach(sender => {
+            sender.track?.stop();
+        });
+    }
+
+   
+    if (peerConnection) {
         peerConnection.close();
         peerConnection = null;
     }
-   
-    if (receiverId) {
-        socket.emit('end-call', { receiverId });
-    } else {
-        socket.emit('end-call');
-    }
-};
-
-
-export const handleEndCall = (callback: () => void) => {
-    socket.on('call-ended', () => {
-        if (peerConnection) {
-            peerConnection.getSenders().forEach((sender) => sender.track?.stop());
-            peerConnection.close();
-            peerConnection = null;
-        }
-        callback();
-    });
 };
 
 
