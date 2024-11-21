@@ -1,14 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { HiOutlinePhone, HiOutlineVideoCamera } from "react-icons/hi2";
 import { Avatar, IconButton } from "@radix-ui/themes";
-import socket, {
-  handleCallAnswered,
-  receiveCall,
-  startCall,
-  endCall,
-} from "../../../services/socketService";
-
-import { VideoCallModal } from "./VideoCallModal"; 
+import socket from "../../../services/socketService"; // assuming you have a socket service to handle connections
+import { VideoCallModal } from "./VideoCallModal";
 
 export interface Receiver {
   userId?: string;
@@ -23,7 +17,6 @@ interface ChatHeaderProps {
     image: string;
   } | null;
   onUserDetailsClick: () => void;
-
 }
 
 type CallType = "audio" | "video";
@@ -31,7 +24,6 @@ type CallType = "audio" | "video";
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   selectedChat,
   onUserDetailsClick,
-
 }) => {
   const [callStatus, setCallStatus] = useState<"idle" | "calling" | "in-call">(
     "idle"
@@ -39,7 +31,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const [incomingCall, setIncomingCall] = useState<{
     from: Receiver;
     type: CallType;
+    offer?: RTCSessionDescriptionInit;
   } | null>(null);
+
   const receiverId = selectedChat?.userId;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -49,23 +43,25 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const [showModal, setShowModal] = useState(false);
 
+  // Listen for incoming calls
   useEffect(() => {
-    const handleIncomingCall = ({
-      from,
-      callType,
-    }: {
-      from: Receiver;
-      callType: CallType;
-    }) => {
-      setIncomingCall({ from, type: callType });
+    socket.on("receive-call", handleIncomingCall);
+    return () => {
+      socket.off("receive-call", handleIncomingCall);
     };
-
-    receiveCall(handleIncomingCall);
-
-     
   }, []);
 
-
+  const handleIncomingCall = ({
+    from,
+    callType,
+    offer,
+  }: {
+    from: Receiver;
+    callType: CallType;
+    offer: RTCSessionDescriptionInit;
+  }) => {
+    setIncomingCall({ from, type: callType, offer });
+  };
 
   const initializePeerConnection = () => {
     peerConnection.current = new RTCPeerConnection();
@@ -79,11 +75,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     };
 
     if (localStream) {
-      localStream
-        .getTracks()
-        .forEach((track) =>
-          peerConnection.current?.addTrack(track, localStream)
-        );
+      localStream.getTracks().forEach((track) =>
+        peerConnection.current?.addTrack(track, localStream)
+      );
     }
   };
 
@@ -97,16 +91,27 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       });
 
       setLocalStream(stream);
-     
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
 
       initializePeerConnection();
-      await startCall(receiverId, type,peerConnection.current!);
+
+      const offer = await peerConnection.current!.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: type === "video",
+      });
+
+      await peerConnection.current!.setLocalDescription(offer);
+
+      socket.emit("call-user", {
+        receiverId,
+        offer,
+        callType: type,
+      });
+
       setCallStatus("calling");
-     
-      setShowModal(true); // Open the modal when the call starts
+      setShowModal(true);
     } catch (error) {
       console.error("Error starting call:", error);
       setCallStatus("idle");
@@ -114,86 +119,65 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const handleAcceptCall = async () => {
-    if (incomingCall) {
+    if (!incomingCall) return;
 
-      setCallStatus("in-call");
-     
-
+    try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: incomingCall.type === "video",
       });
-      setLocalStream(stream);
-     
-     
 
+      setLocalStream(stream);
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
 
       initializePeerConnection();
-      handleCallAnswered(peerConnection.current!);
-       setRemoteStream(stream);
 
+      if (incomingCall.offer) {
+        await peerConnection.current!.setRemoteDescription(
+          new RTCSessionDescription(incomingCall.offer)
+        );
+      }
+
+      const answer = await peerConnection.current!.createAnswer();
+      await peerConnection.current!.setLocalDescription(answer);
+
+      socket.emit("answer-call", {
+        from: incomingCall.from.userId,
+        answer,
+        callType: incomingCall.type,
+      });
+
+      setCallStatus("in-call");
       setIncomingCall(null);
-      setShowModal(true); 
+      setShowModal(true);
+    } catch (error) {
+      console.error("Error accepting call:", error);
+      setCallStatus("idle");
     }
   };
 
-  useEffect(() => {
-  
-  const handleCallEnded = () => {
-    endCall(); 
-    
-    handleEndCall();
-  };
-
-  socket.on("call-ended", handleCallEnded);
-
-  return () => {
-    socket.off("call-ended", handleCallEnded);
-
-
-  };
-}, []);
-
-const handleEndCall = () => {
-  
-  
-  if (localStream) {
-   
-    localStream.getTracks().forEach((track) => track.stop());
-    setLocalStream(null);
-  
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
+  const handleEndCall = () => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => track.stop());
+      setLocalStream(null);
     }
-  }
 
-  if (remoteStream) {
-   
-    remoteStream.getTracks().forEach((track) => track.stop());
-    setRemoteStream(null);
-    
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = null;
+    if (remoteStream) {
+      remoteStream.getTracks().forEach((track) => track.stop());
+      setRemoteStream(null);
     }
-  }
 
-  if (peerConnection.current) {
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
 
-    peerConnection.current.close();
-    peerConnection.current = null;
-  }
-
-  setCallStatus("idle");
-  setShowModal(false);
-
-  socket.emit("end-callactivate", { receiverId });
-   
-  
-  
-};
+    setCallStatus("idle");
+    setShowModal(false);
+    socket.emit("end-call", { receiverId });
+  };
 
   useEffect(() => {
     if (localStream && localVideoRef.current) {
@@ -224,8 +208,6 @@ const handleEndCall = () => {
           <p className="text-sm text-gray-500">Online</p>
         </div>
       </div>
-
-
 
       {callStatus === "idle" && (
         <div className="flex items-center space-x-4">
@@ -279,7 +261,7 @@ const handleEndCall = () => {
             src={incomingCall.from.image}
             alt={incomingCall.from.username}
             className="w-12 h-12 rounded-full mt-2 mb-4"
-            fallback=""
+            fallback="User Avatar"
           />
           <div className="flex space-x-2">
             <button
@@ -298,17 +280,15 @@ const handleEndCall = () => {
         </div>
       )}
 
-    
       {showModal && (
         <VideoCallModal
           localStream={localStream}
           remoteStream={remoteStream}
           onEnd={handleEndCall}
-       
         />
       )}
     </div>
   );
 };
 
-export default ChatHeader;
+export default ChatHeader
