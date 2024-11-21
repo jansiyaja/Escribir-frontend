@@ -8,7 +8,6 @@ import { UserDetailsModal } from "./SubComponenets/UserDetailsModal";
 import ChatInterface from "./SubComponenets/ChatInterface";
 
 import { AudioCallModal } from "./SubComponenets/AudioCallModal";
-import VideoChat from "./SubComponenets/VideoChat";
 
 
 const Chat = () => {
@@ -144,7 +143,7 @@ const Chat = () => {
           />
         )}
 
-        <VideoChat/>
+       
         
       </div>
     </div>

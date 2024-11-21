@@ -29,7 +29,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 import { ROUTES } from './routes/Route';
 import NotFound from './Pages/Common/NotFound';
-import { SocketProvider } from './Contexts/SocketProvider';
+
 
 
 
@@ -39,7 +39,7 @@ function App() {
 
   return (
     <SearchProvider>
-      <SocketProvider>
+      
         
     
       <div className={` ${darkMode ? 'bg-gray-900 text-white' : 'bg-white text-black'}`}>
@@ -84,7 +84,7 @@ function App() {
           </Router>
         </ErrorBoundary>
         </div>
-         </SocketProvider>
+         
     </SearchProvider>
       
   );

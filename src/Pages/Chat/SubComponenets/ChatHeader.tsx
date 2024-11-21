@@ -113,32 +113,25 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     }
   };
 
-  const handleAcceptCall = async () => {
-    if (incomingCall) {
-
-      setCallStatus("in-call");
-     
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: incomingCall.type === "video",
-      });
-      setLocalStream(stream);
-     
-     
-
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
-
-      initializePeerConnection();
-      handleCallAnswered(peerConnection.current!);
-       setRemoteStream(stream);
-
-      setIncomingCall(null);
-      setShowModal(true); 
+const handleAcceptCall = async () => {
+  if (incomingCall) {
+    setCallStatus("in-call");
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: incomingCall.type === "video",
+    });
+    setLocalStream(stream);
+    if (localVideoRef.current) {
+      localVideoRef.current.srcObject = stream;
     }
-  };
+    initializePeerConnection();
+    handleCallAnswered(peerConnection.current!);
+    setIncomingCall(null);
+    setShowModal(true);
+  }
+};
+
+
 
   useEffect(() => {
   

@@ -192,13 +192,26 @@ export const startCall = async (
 };
 
 
-export const receiveCall = (
-  callback: (callInfo: CallInfo) => void
-) => {
+export const receiveCall = (callback: (callInfo: CallInfo) => void) => {
   socket.on("receive-call", async ({ from, offer, callType }: CallInfo) => {
+    const peerConnection = new RTCPeerConnection();
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("ice-candidate", { candidate: event.candidate });
+      }
+    };
+
+   
+
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit("call-answer", { answer });
+
     callback({ from, offer, callType });
   });
 };
+
 
 export const handleCallAnswered = (peerConnection: RTCPeerConnection) => {
   socket.on("call-answered", async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
@@ -206,7 +219,16 @@ export const handleCallAnswered = (peerConnection: RTCPeerConnection) => {
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     }
   });
+
+  // Send answer back to caller
+  peerConnection.onnegotiationneeded = async () => {
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    socket.emit("call-answer", { answer });
+  };
 };
+
+
 
 export const endCall = () => {
    
