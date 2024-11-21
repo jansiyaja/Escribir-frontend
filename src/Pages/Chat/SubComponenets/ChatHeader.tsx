@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { HiOutlinePhone, HiOutlineVideoCamera } from "react-icons/hi2";
 import { Avatar, IconButton } from "@radix-ui/themes";
-import socket from "../../../services/socketService"; // assuming you have a socket service to handle connections
+import socket from "../../../services/socketService";
+
 import { VideoCallModal } from "./VideoCallModal";
 
 export interface Receiver {
@@ -31,9 +32,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const [incomingCall, setIncomingCall] = useState<{
     from: Receiver;
     type: CallType;
-    offer?: RTCSessionDescriptionInit;
   } | null>(null);
-
   const receiverId = selectedChat?.userId;
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -43,161 +42,131 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const [showModal, setShowModal] = useState(false);
 
+  // Handle incoming calls
   useEffect(() => {
-    socket.on("receive-call", handleIncomingCall);
+    const handleIncomingCall = ({
+      from,
+      callType,
+    }: {
+      from: Receiver;
+      callType: CallType;
+    }) => {
+      setIncomingCall({ from, type: callType });
+    };
+
+    socket.on("incoming-call", handleIncomingCall);
+
     return () => {
-      socket.off("receive-call", handleIncomingCall);
+      socket.off("incoming-call", handleIncomingCall);
     };
   }, []);
 
-  const handleIncomingCall = ({
-    from,
-    callType,
-    offer,
-  }: {
-    from: Receiver;
-    callType: CallType;
-    offer: RTCSessionDescriptionInit;
-  }) => {
-    setIncomingCall({ from, type: callType, offer });
-  };
+  // Initialize peer connection
+  const initializePeerConnection = () => {
+    peerConnection.current = new RTCPeerConnection();
 
-const initializePeerConnection = () => {
-  if (peerConnection.current) return; 
+    peerConnection.current.ontrack = (event) => {
+      const [stream] = event.streams;
+      setRemoteStream(stream);
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = stream;
+      }
+    };
 
+    peerConnection.current.onicecandidate = (event) => {
+      if (event.candidate) {
+        socket.emit("candidate", { candidate: event.candidate, to: receiverId });
+      }
+    };
 
-  peerConnection.current = new RTCPeerConnection();
-
-  peerConnection.current.ontrack = (event) => {
-    const [stream] = event.streams;
-    setRemoteStream(stream);
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = stream;
+    if (localStream) {
+      localStream
+        .getTracks()
+        .forEach((track) =>
+          peerConnection.current?.addTrack(track, localStream)
+        );
     }
   };
 
+  // Start a call
+  const handleStartCall = async (type: CallType) => {
+    if (!receiverId) return;
 
-  peerConnection.current.onicecandidate = (event) => {
-    if (event.candidate) {
-    
-      socket.emit("ice-candidate", {
-        receiverId: selectedChat?.userId,  
-        candidate: event.candidate,
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: type === "video",
       });
+
+      setLocalStream(stream);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      initializePeerConnection();
+
+      // Create offer for the call
+      const offer = await peerConnection.current!.createOffer();
+      await peerConnection.current!.setLocalDescription(offer);
+
+      // Send offer to receiver
+      socket.emit("start-call", { offer, receiverId, type });
+      setCallStatus("calling");
+
+      setShowModal(true); // Open the modal when the call starts
+    } catch (error) {
+      console.error("Error starting call:", error);
+      setCallStatus("idle");
     }
   };
 
-  peerConnection.current.oniceconnectionstatechange = () => {
-    console.log("ICE connection state:", peerConnection.current?.iceConnectionState);
+  // Accept incoming call
+  const handleAcceptCall = async () => {
+    if (incomingCall) {
+      setCallStatus("in-call");
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: incomingCall.type === "video",
+      });
+      setLocalStream(stream);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      initializePeerConnection();
+
+      // Set remote description (the offer received)
+      const answer = await peerConnection.current!.createAnswer();
+      await peerConnection.current!.setLocalDescription(answer);
+
+      socket.emit("answer-call", { answer, to: incomingCall.from.userId });
+
+      setIncomingCall(null);
+      setShowModal(true);
+    }
   };
 
-
-  if (localStream) {
-    localStream.getTracks().forEach((track) => {
-      peerConnection.current?.addTrack(track, localStream);
-    });
-  }
-};
-const handleStartCall = async (type: CallType) => {
-  if (!receiverId) return;
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: type === "video",
-    });
-
-    setLocalStream(stream);
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = stream;
-    }
-
-    initializePeerConnection();
-
-    const offer = await peerConnection.current!.createOffer({
-      offerToReceiveAudio: true,
-      offerToReceiveVideo: type === "video",
-    });
-
-    await peerConnection.current!.setLocalDescription(offer);
-
-    socket.emit("call-user", {
-      receiverId,
-      offer,
-      callType: type,
-    });
-
-    setCallStatus("calling");
-    setShowModal(true);
-  } catch (error) {
-    console.error("Error starting call:", error);
-    setCallStatus("idle");
-  }
-};
-
-const handleAcceptCall = async () => {
-  if (!incomingCall) return;
-
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: incomingCall.type === "video",
-    });
-
-    setLocalStream(stream);
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = stream;
-    }
-
-    initializePeerConnection();
-
-    if (incomingCall.offer) {
-      await peerConnection.current!.setRemoteDescription(
-        new RTCSessionDescription(incomingCall.offer)
-      );
-    }
-
-    const answer = await peerConnection.current!.createAnswer();
-    await peerConnection.current!.setLocalDescription(answer);
-
-    socket.emit("answer-call", {
-      from: incomingCall.from.userId,
-      answer,
-      callType: incomingCall.type,
-    });
-
-    // Update the call status and remove the incoming call
-    setCallStatus("in-call");
-    setIncomingCall(null);
-
-    // Remote stream handling
-    if (peerConnection.current) {
-      peerConnection.current.ontrack = (event) => {
-        const [stream] = event.streams;
-        setRemoteStream(stream);
-        if (remoteVideoRef.current) {
-          remoteVideoRef.current.srcObject = stream;
-        }
-      };
-    }
-
-    setShowModal(true);
-  } catch (error) {
-    console.error("Error accepting call:", error);
-    setCallStatus("idle");
-  }
-};
-;
-
+  // End call
   const handleEndCall = () => {
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       setLocalStream(null);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
     }
 
     if (remoteStream) {
       remoteStream.getTracks().forEach((track) => track.stop());
       setRemoteStream(null);
+
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = null;
+      }
     }
 
     if (peerConnection.current) {
@@ -207,6 +176,7 @@ const handleAcceptCall = async () => {
 
     setCallStatus("idle");
     setShowModal(false);
+
     socket.emit("end-call", { receiverId });
   };
 
@@ -240,6 +210,7 @@ const handleAcceptCall = async () => {
         </div>
       </div>
 
+      {/* Call controls */}
       {callStatus === "idle" && (
         <div className="flex items-center space-x-4">
           <button
@@ -283,6 +254,7 @@ const handleAcceptCall = async () => {
         </button>
       )}
 
+      {/* Incoming call modal */}
       {incomingCall && (
         <div className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg border border-gray-200">
           <h3 className="text-sm font-medium">
@@ -292,7 +264,7 @@ const handleAcceptCall = async () => {
             src={incomingCall.from.image}
             alt={incomingCall.from.username}
             className="w-12 h-12 rounded-full mt-2 mb-4"
-            fallback="User Avatar"
+            fallback=""
           />
           <div className="flex space-x-2">
             <button
@@ -322,4 +294,4 @@ const handleAcceptCall = async () => {
   );
 };
 
-export default ChatHeader
+export default ChatHeader;
