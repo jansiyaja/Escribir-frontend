@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { HiOutlinePhone, HiOutlineVideoCamera } from "react-icons/hi2";
-import { Avatar, IconButton } from "@radix-ui/themes";
+import {  IconButton } from "@radix-ui/themes";
 import socket from "../../../services/socketService";
-import { VideoCallModal } from "./VideoCallModal"; 
+import { VideoCallModal } from "./VideoCallModal";
 
 export const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
@@ -85,19 +85,23 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
   }, []);
 
   const initializePeerConnection = () => {
+    console.log("Initializing peer connection...");
     if (peerConnection.current) {
       peerConnection.current.ontrack = (event) => {
         const [stream] = event.streams;
+        console.log("Received remote stream:", stream);
         setRemoteStream(stream);
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = stream;
+          console.log("Remote stream set to remoteVideoRef.");
         }
       };
 
       if (localStream) {
-        localStream.getTracks().forEach((track) =>
-          peerConnection.current?.addTrack(track, localStream)
-        );
+        localStream.getTracks().forEach((track) => {
+          peerConnection.current?.addTrack(track, localStream);
+          console.log("Adding local track to peer connection:", track);
+        });
       }
     }
   };
@@ -115,6 +119,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
       setLocalStream(stream);
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        console.log("Local stream set to localVideoRef.");
       }
 
       initializePeerConnection();
@@ -123,8 +128,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
         offerToReceiveVideo: type === "video",
       });
 
+      console.log("Created offer:", offer);
+
       await peerConnection.current?.setLocalDescription(offer!);
+      console.log("Local description set with offer:", peerConnection.current?.localDescription);
+
       socket.emit("call-user", { receiverId, callType: type, offer });
+      console.log("Offer sent to receiver via socket...");
 
       setCallStatus("calling");
       setShowModal(true);
@@ -142,21 +152,29 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
         video: incomingCall.type === "video",
       });
 
+      console.log("Local stream obtained for incoming call:", stream);
+
       setLocalStream(stream);
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        console.log("Local stream set to localVideoRef.");
       }
       initializePeerConnection();
       const answer = await peerConnection.current!.createAnswer();
+      console.log("Answer created:", answer);
       await peerConnection.current!.setLocalDescription(answer);
+      console.log("Local description set with answer:", peerConnection.current?.localDescription);
 
       socket.emit("call-answered", { answer });
+      console.log("Answer sent to caller via socket...");
+
       setIncomingCall(null);
       setShowModal(true);
     }
   };
 
   const handleEndCall = () => {
+    console.log("Ending call...");
     if (localStream) {
       localStream.getTracks().forEach((track) => track.stop());
       setLocalStream(null);
@@ -184,6 +202,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
     setShowModal(false);
 
     socket.emit("end-call", { receiverId });
+    console.log("Call ended and event emitted to server...");
   };
 
   if (!selectedChat) return <div>Select a user</div>;
@@ -206,8 +225,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
           <p className="text-sm text-gray-500">Online</p>
         </div>
       </div>
-
-
 
       {callStatus === "idle" && (
         <div className="flex items-center space-x-4">
@@ -243,46 +260,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
         </div>
       )}
 
-      {callStatus === "in-call" && (
-        <button
-          onClick={handleEndCall}
-          className="mt-4 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md transition"
-        >
-          End Call
-        </button>
-      )}
-
-      {incomingCall && (
-        <div className="flex flex-col items-center p-4 bg-white shadow-lg rounded-lg border border-gray-200">
-          <h3 className="text-sm font-medium">
-            {incomingCall.from.username} is calling...
-          </h3>
-          <Avatar
-            src={incomingCall.from.image}
-            alt={incomingCall.from.username}
-            className="w-12 h-12 rounded-full mt-2 mb-4"
-            fallback=""
-          />
-          <div className="flex space-x-2">
-            <button
-              onClick={handleAcceptCall}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded-md transition"
-            >
-              Accept
-            </button>
-            <button
-              onClick={handleEndCall}
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-md transition"
-            >
-              Decline
-            </button>
-          </div>
-        </div>
-      )}
-
-    
       {showModal && (
-        <VideoCallModal
+              <VideoCallModal
           localStream={localStream}
           remoteStream={remoteStream}
           onEnd={handleEndCall}
