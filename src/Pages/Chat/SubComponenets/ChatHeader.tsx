@@ -106,7 +106,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       await startCall(receiverId, type,peerConnection.current!);
       setCallStatus("calling");
      
-      setShowModal(true); // Open the modal when the call starts
+      setShowModal(true); 
     } catch (error) {
       console.error("Error starting call:", error);
       setCallStatus("idle");
@@ -192,6 +192,7 @@ const handleEndCall = () => {
     if (localStream && localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
     }
+
     if (remoteStream && remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
     }

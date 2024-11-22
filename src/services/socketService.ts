@@ -185,7 +185,7 @@ export const startCall = async (
     });
     await peerConnection.setLocalDescription(offer);
 
-    socket.emit("call-user", { receiverId, offer, callType });
+    socket.emit("call-user", { receiverId, callType,offer });
   } catch (error) {
     console.error("Error starting call:", error);
   }
@@ -206,6 +206,7 @@ export const receiveCall = (callback: (callInfo: CallInfo) => void) => {
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
+    console.log("Sending call answer:", answer);
     socket.emit("call-answer", { answer });
 
     callback({ from, offer, callType });

@@ -105,7 +105,7 @@ export const userBlogList = async (autherId:string|undefined) => {
 
 export const addReaction = async (id: string|undefined, reaction: string, authorId: string|undefined) => {
     try {
-        const response = await axiosInstance.delete(blogEndpoints.addReaction(id), {
+        const response = await axiosInstance.post(blogEndpoints.addReaction(id), {
             data: { reaction, authorId },
             withCredentials: true,
         });
