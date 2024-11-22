@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { HiOutlinePhone, HiOutlineVideoCamera } from "react-icons/hi2";
 import { Avatar, IconButton } from "@radix-ui/themes";
-import socket, {
-  handleCallAnswered,
-  receiveCall,
-  startCall,
-  endCall,
-} from "../../../services/socketService";
+// import socket, {
+//   handleCallAnswered,
+//   receiveCall,
+//   startCall,
+//   endCall,
+// } from "../../../services/socketService";
 
+import socket from "../../../services/socketService";
 import { VideoCallModal } from "./VideoCallModal"; 
+ export const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
 export interface Receiver {
   userId?: string;
@@ -25,8 +27,13 @@ interface ChatHeaderProps {
   onUserDetailsClick: () => void;
 
 }
-
 type CallType = "audio" | "video";
+
+interface CallInfo {
+  from: Receiver;
+  offer: RTCSessionDescriptionInit;
+  callType: CallType;
+}
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
   selectedChat,
@@ -47,9 +54,26 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
 
+
+
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const handleIncomingCall = ({
+  //     from,
+  //     callType,
+  //   }: {
+  //     from: Receiver;
+  //     callType: CallType;
+  //   }) => {
+  //     console.log("Incoming call from:", from.username, "Call type:", callType);
+  //     setIncomingCall({ from, type: callType });
+  //   };
+
+  //   receiveCall(handleIncomingCall);
+  // }, []);
+  
+ useEffect(() => {
     const handleIncomingCall = ({
       from,
       callType,
@@ -61,10 +85,43 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       setIncomingCall({ from, type: callType });
     };
 
-    receiveCall(handleIncomingCall);
-  }, []);
-  
+    socket.on("receive-call", async ({ from, offer, callType }: CallInfo) => {
+      console.log("Incoming call received from:", from.username);
+      console.log("Call type:", callType);
 
+      const peerConnection = new RTCPeerConnection();
+      console.log("Created new RTCPeerConnection for the incoming call...");
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log("Sending ICE candidate to caller...");
+          socket.emit("ice-candidate", { candidate: event.candidate });
+        }
+      };
+
+      console.log("Setting remote description with the received offer...");
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      console.log("Remote description set:", peerConnection?.remoteDescription);
+
+      console.log("Creating answer for the received offer...");
+      const answer = await peerConnection.createAnswer();
+      console.log("Answer created:", answer);
+
+      console.log("Setting local description with the created answer...");
+      await peerConnection.setLocalDescription(answer);
+      console.log("Local description set:", peerConnection.localDescription);
+
+      console.log("Sending answer back to the caller via socket...");
+      socket.emit("call-answer", { answer });
+
+      setIncomingCall({ from, type: callType });
+      setCallStatus("calling");
+    });
+
+    return () => {
+      socket.off("receive-call", handleIncomingCall);
+    };
+  }, []);
 
 
   const initializePeerConnection = () => {
@@ -87,114 +144,237 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     }
   };
 
-  const handleStartCall = async (type: CallType) => {
+  // const handleStartCall = async (type: CallType) => {
+  //    console.log("handleStartCall triggered"); 
+  //   if (!receiverId) return;
+
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({
+  //       audio: true,
+  //       video: type === "video",
+  //     });
+
+  //     setLocalStream(stream);
+     
+  //     if (localVideoRef.current) {
+  //       localVideoRef.current.srcObject = stream;
+  //     }
+
+  //     initializePeerConnection();
+  //     await startCall(receiverId, type,peerConnection.current!);
+  //     setCallStatus("calling");
+     
+  //     setShowModal(true); 
+  //   } catch (error) {
+  //     console.error("Error starting call:", error);
+  //     setCallStatus("idle");
+  //   }
+  // };
+
+   const handleStartCall = async (type: CallType) => {
+    console.log("handleStartCall triggered");
     if (!receiverId) return;
 
     try {
+      console.log(`Requesting ${type} media stream...`);
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
         video: type === "video",
       });
 
+      console.log("Local media stream obtained:", stream);
       setLocalStream(stream);
-     
+
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        console.log("Local stream set to localVideoRef.");
       }
 
       initializePeerConnection();
-      await startCall(receiverId, type,peerConnection.current!);
+      const offer = await peerConnection.current?.createOffer({
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: type === "video",
+      });
+      console.log("Offer created:", offer);
+
+      await peerConnection.current?.setLocalDescription(offer!);
+      console.log("Local description set with the created offer.");
+
+      socket.emit("call-user", { receiverId, callType: type, offer });
+      console.log("Offer sent to receiver via socket.");
+
       setCallStatus("calling");
-     
-      setShowModal(true); 
+      setShowModal(true);
     } catch (error) {
       console.error("Error starting call:", error);
       setCallStatus("idle");
     }
   };
+// const handleAcceptCall = async () => {
+//   if (incomingCall) {
+//     setCallStatus("in-call");
+//     const stream = await navigator.mediaDevices.getUserMedia({
+//       audio: true,
+//       video: incomingCall.type === "video",
+//     });
+//     setLocalStream(stream);
+//     if (localVideoRef.current) {
+//       localVideoRef.current.srcObject = stream;
+//     }
+//     initializePeerConnection();
+//     handleCallAnswered(peerConnection.current!);
+//     setIncomingCall(null);
+//     setShowModal(true);
+//   }
+// };
 
 const handleAcceptCall = async () => {
-  if (incomingCall) {
-    setCallStatus("in-call");
-    const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: incomingCall.type === "video",
-    });
-    setLocalStream(stream);
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = stream;
+    if (incomingCall) {
+      setCallStatus("in-call");
+      console.log(`Accepting ${incomingCall.type} call...`);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: incomingCall.type === "video",
+      });
+      console.log("Local media stream obtained for incoming call:", stream);
+      setLocalStream(stream);
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        console.log("Local stream set to localVideoRef.");
+      }
+      initializePeerConnection();
+      const answer = await peerConnection.current!.createAnswer();
+      console.log("Answer created for incoming call:", answer);
+
+      await peerConnection.current!.setLocalDescription(answer);
+      console.log("Local description set with the answer.");
+
+      socket.emit("call-answered", { answer });
+      console.log("Answer sent to caller via socket.");
+
+      setIncomingCall(null);
+      setShowModal(true);
     }
-    initializePeerConnection();
-    handleCallAnswered(peerConnection.current!);
-    setIncomingCall(null);
-    setShowModal(true);
-  }
-};
-
-
-
-  useEffect(() => {
-  
-  const handleCallEnded = () => {
-    endCall(); 
-    
-    handleEndCall();
   };
 
-  socket.on("call-ended", handleCallEnded);
-
-  return () => {
-    socket.off("call-ended", handleCallEnded);
-
-
-  };
-}, []);
-
-const handleEndCall = () => {
+//   useEffect(() => {
   
-  
-  if (localStream) {
-   
-    localStream.getTracks().forEach((track) => track.stop());
-    setLocalStream(null);
-  
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = null;
-    }
-  }
-
-  if (remoteStream) {
-   
-    remoteStream.getTracks().forEach((track) => track.stop());
-    setRemoteStream(null);
+//   const handleCallEnded = () => {
+//     endCall();
     
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = null;
-    }
-  }
+//     handleEndCall();
+//   };
 
-  if (peerConnection.current) {
+//   socket.on("call-ended", handleCallEnded);
 
-    peerConnection.current.close();
-    peerConnection.current = null;
-  }
+//   return () => {
+//     socket.off("call-ended", handleCallEnded);
 
-  setCallStatus("idle");
-  setShowModal(false);
 
-  socket.emit("end-callactivate", { receiverId });
+//   };
+// }, []);
+
+// const handleEndCall = () => {
+  
+  
+//   if (localStream) {
+   
+//     localStream.getTracks().forEach((track) => track.stop());
+//     setLocalStream(null);
+  
+//     if (localVideoRef.current) {
+//       localVideoRef.current.srcObject = null;
+//     }
+//   }
+
+//   if (remoteStream) {
+   
+//     remoteStream.getTracks().forEach((track) => track.stop());
+//     setRemoteStream(null);
+    
+//     if (remoteVideoRef.current) {
+//       remoteVideoRef.current.srcObject = null;
+//     }
+//   }
+
+//   if (peerConnection.current) {
+
+//     peerConnection.current.close();
+//     peerConnection.current = null;
+//   }
+
+//   setCallStatus("idle");
+//   setShowModal(false);
+
+//   socket.emit("end-callactivate", { receiverId });
    
   
   
-};
+// };
+
+  
+   const handleEndCall = () => {
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
+        console.log("Stopping local stream track:", track);
+        track.stop();
+      });
+      setLocalStream(null);
+
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+        console.log("Local video stream stopped.");
+      }
+    }
+
+    if (remoteStream) {
+      remoteStream.getTracks().forEach((track) => {
+        console.log("Stopping remote stream track:", track);
+        track.stop();
+      });
+      setRemoteStream(null);
+
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = null;
+        console.log("Remote video stream stopped.");
+      }
+    }
+
+    if (peerConnection.current) {
+      console.log("Closing peer connection.");
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
+    setCallStatus("idle");
+    setShowModal(false);
+
+    socket.emit("end-call", { receiverId });
+    console.log("Call ended and notification sent to receiver.");
+  };
 
   useEffect(() => {
+    const handleCallEnded = () => {
+      console.log("Call ended by peer.");
+      handleEndCall();
+    };
+
+    socket.on("call-ended", handleCallEnded);
+
+    return () => {
+      socket.off("call-ended", handleCallEnded);
+    };
+  }, []);
+
+useEffect(() => {
     if (localStream && localVideoRef.current) {
       localVideoRef.current.srcObject = localStream;
+      console.log("Local stream set to localVideoRef in useEffect.");
     }
 
     if (remoteStream && remoteVideoRef.current) {
       remoteVideoRef.current.srcObject = remoteStream;
+      console.log("Remote stream set to remoteVideoRef in useEffect.");
     }
   }, [localStream, remoteStream]);
 

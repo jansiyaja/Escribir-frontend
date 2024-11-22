@@ -10,7 +10,7 @@ import { sendReactionNotification } from '../../../services/socketService';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import CommentSection from './Comment';
-import { addReaction, deleteReaction, getSingleBlog, reportBlog, userBlogList } from '../../../services/Api/blogApi';
+import {  deleteReaction, getSingleBlog, reportBlog, userBlogList } from '../../../services/Api/blogApi';
 
 const reactionTypes = [
   { emoji: '👍', label: 'Like' },
@@ -150,7 +150,8 @@ const SingleBlog: React.FC = () => {
         if (!autherId) return null;
          console.log("adding reaction", id,reaction,autherId);
          
-        await addReaction(id,reaction,autherId)
+       
+         await axiosInstance.post(`/blog/react/${id}`, { reaction, autherId },{withCredentials:true});
         setReactions((prevReactions) => ({
           ...prevReactions,
           [lowerReaction]: (prevReactions[lowerReaction] || 0) + 1,
