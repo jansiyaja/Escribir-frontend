@@ -148,7 +148,8 @@ const SingleBlog: React.FC = () => {
       } else {
         if (!userId) return null;
         if (!autherId) return null;
-
+         console.log("adding reaction", id,reaction,autherId);
+         
         await addReaction(id,reaction,autherId)
         setReactions((prevReactions) => ({
           ...prevReactions,

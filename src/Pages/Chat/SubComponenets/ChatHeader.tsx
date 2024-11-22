@@ -57,13 +57,13 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       from: Receiver;
       callType: CallType;
     }) => {
+      console.log("Incoming call from:", from.username, "Call type:", callType);
       setIncomingCall({ from, type: callType });
     };
 
     receiveCall(handleIncomingCall);
-
-     
   }, []);
+  
 
 
 

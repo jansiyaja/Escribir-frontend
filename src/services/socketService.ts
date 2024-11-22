@@ -146,13 +146,13 @@ export const unsubscribeFromNotifications = () => {
 //     });
 // };
 
-// export const handleIceCandidate = () => {
-//     socket.on('ice-candidate', ({ candidate }) => {
-//         if (peerConnection) {
-//             peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-//         }
-//     });
-// };
+export const handleIceCandidate = () => {
+    socket.on('ice-candidate', ({ candidate }) => {
+        if (peerConnection) {
+            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+        }
+    });
+};
 
 
 
@@ -170,80 +170,92 @@ interface CallInfo {
   callType: CallType;
 }
 
-
-
 export const startCall = async (
   receiverId: string,
   callType: CallType,
   peerConnection: RTCPeerConnection
 ) => {
   try {
- 
+    console.log("Creating WebRTC offer...");
     const offer = await peerConnection.createOffer({
       offerToReceiveAudio: true,
       offerToReceiveVideo: callType === "video",
     });
+
+    console.log("Setting local description with the created offer...");
     await peerConnection.setLocalDescription(offer);
 
-    socket.emit("call-user", { receiverId, callType,offer });
+    console.log("Sending offer to receiver via socket...");
+    socket.emit("call-user", { receiverId, callType, offer });
   } catch (error) {
     console.error("Error starting call:", error);
   }
 };
 
-
 export const receiveCall = (callback: (callInfo: CallInfo) => void) => {
   socket.on("receive-call", async ({ from, offer, callType }: CallInfo) => {
+    console.log("Incoming call received from:", from.username);
+    console.log("Call type:", callType);
+
     const peerConnection = new RTCPeerConnection();
+    console.log("Created new RTCPeerConnection for the incoming call...");
+
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
+        console.log("Sending ICE candidate to caller...");
         socket.emit("ice-candidate", { candidate: event.candidate });
       }
     };
 
-   
-
+    console.log("Setting remote description with the received offer...");
     await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+    console.log("Creating answer for the received offer...");
     const answer = await peerConnection.createAnswer();
+
+    console.log("Setting local description with the created answer...");
     await peerConnection.setLocalDescription(answer);
-    console.log("Sending call answer:", answer);
+
+    console.log("Sending answer back to the caller via socket...");
     socket.emit("call-answer", { answer });
 
     callback({ from, offer, callType });
   });
 };
 
-
 export const handleCallAnswered = (peerConnection: RTCPeerConnection) => {
   socket.on("call-answered", async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
+    console.log("Received call answer from receiver...");
     if (peerConnection) {
+      console.log("Setting remote description with the received answer...");
       await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
     }
   });
 
-  // Send answer back to caller
   peerConnection.onnegotiationneeded = async () => {
+    console.log("Negotiation needed, creating and sending a new answer...");
     const answer = await peerConnection.createAnswer();
+    console.log("Setting local description with the newly created answer...");
     await peerConnection.setLocalDescription(answer);
+    console.log("Sending updated answer via socket...");
     socket.emit("call-answer", { answer });
   };
 };
 
-
-
 export const endCall = () => {
-   
-     if (peerConnection && peerConnection.getSenders) {
-        peerConnection.getSenders().forEach(sender => {
-            sender.track?.stop();
-        });
-    }
+  console.log("Ending the call and stopping all tracks...");
+  if (peerConnection && peerConnection.getSenders) {
+    peerConnection.getSenders().forEach((sender) => {
+      console.log("Stopping track:", sender.track);
+      sender.track?.stop();
+    });
+  }
 
-   
-    if (peerConnection) {
-        peerConnection.close();
-        peerConnection = null;
-    }
+  if (peerConnection) {
+    console.log("Closing the peer connection...");
+    peerConnection.close();
+    peerConnection = null;
+  }
 };
 
 
