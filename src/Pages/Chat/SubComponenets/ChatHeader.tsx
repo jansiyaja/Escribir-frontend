@@ -72,7 +72,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
     peerConnection.current.ontrack = (event) => {
       const [stream] = event.streams;
-      setRemoteStream(stream);
+      
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = stream;
       }
@@ -105,8 +105,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       initializePeerConnection();
       await startCall(receiverId, type,peerConnection.current!);
       setCallStatus("calling");
+       setRemoteStream(stream);
      
-      setShowModal(true); // Open the modal when the call starts
+      setShowModal(true); 
     } catch (error) {
       console.error("Error starting call:", error);
       setCallStatus("idle");
