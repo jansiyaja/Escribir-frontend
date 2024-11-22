@@ -107,6 +107,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ selectedChat, onUserDetailsClic
   };
 
   const handleStartCall = async (type: CallType) => {
+    console.log("iam clicking the buttion");
+    console.log("id",receiverId);
+    
     if (!receiverId) return;
 
     try {
