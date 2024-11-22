@@ -78,7 +78,7 @@ axiosAdminInstance.interceptors.response.use(
      
         if (error.response.status === 401) {
             console.log('Access token is invalid. Logging out...');
-            window.location.href = '/adminLogin';
+            //window.location.href = '/adminLogin';
         }
 
         return Promise.reject(error);
