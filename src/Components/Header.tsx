@@ -38,7 +38,8 @@ const Header = () => {
   const sidebarFeatures: Record<string, Feature[]> = {
     dashboard: [
       { label: "Dashboard", path: "/dashboard" },
-      { label: "Settings", path: "/profile" },
+      { label: "Profile", path: "/profile" },
+      { label: "Settings", path: "/settings" },
     ],
   };
 

@@ -2,9 +2,12 @@ import { Link } from "react-router-dom";
 import Spinner from "../Spinner";
 import UseLogin from "./Hooks/UseLogin";
 import PasswordToogle from "../PasswordToggle";
+import ToastComponent from "../ToastNotification";
+
 
 const Login: React.FC = () => {
-  const { login, loading, error, handleChange, handleLogin } = UseLogin();
+  const { login, loading, error, handleChange, handleLogin,showToast ,setShowToast ,toastMessage,toastType} = UseLogin();
+
 
   return (
     <form onSubmit={handleLogin}>
@@ -56,7 +59,15 @@ const Login: React.FC = () => {
           Register here
         </Link>
       </p>
+
+        <ToastComponent
+            open={showToast}
+            setOpen={setShowToast}
+            message={toastMessage}
+            type={toastType}
+          />  
     </form>
+    
   );
 };
 

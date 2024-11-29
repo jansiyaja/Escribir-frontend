@@ -2,7 +2,8 @@ import { io } from 'socket.io-client';
 import { Message } from '../Interfaces/Components';
 
 
- export const socket = io(import.meta.env.VITE_API_BASE_URL, { withCredentials: true });
+ //export const socket = io(import.meta.env.VITE_API_BASE_URL, { withCredentials: true });
+ export const socket = io("http://localhost:3000", { withCredentials: true });
  export const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 let peerConnection: RTCPeerConnection | null = null;
 

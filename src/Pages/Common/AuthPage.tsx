@@ -5,12 +5,14 @@ import Login from '../../Components/Auth/Login';
 import Register from '../../Components/Auth/Register';
 import OTP from '../../Components/Auth/OTP';
 
+
+
 interface CommonPageProps {
   page: string;
 }
 
 const CommonPage: React.FC<CommonPageProps> = ({ page }) => {
-  console.log(page);
+
 
   const renderComponent = () => {
     switch (page) {
@@ -42,11 +44,12 @@ const CommonPage: React.FC<CommonPageProps> = ({ page }) => {
 
           <div className="flex items-center justify-between mb-6">
          <h1 className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold text-gray-800">
-  {page === 'login' ? 'Login' : page === 'register' ? 'Create an account' : 'Verify OTP'}
+         {page === 'login' ? 'Login' : page === 'register' ? 'Create an account' : 'Verify OTP'}
 </h1>
 
 
           </div>
+         
 
           <div>
             {renderComponent()}

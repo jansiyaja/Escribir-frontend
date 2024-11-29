@@ -10,6 +10,7 @@ import ToastComponent from '../../../Components/ToastNotification';
 import { User } from '../../../Interfaces/slice';
 import { setUser } from '../../../redux/slices/authSlice';
 import { useDispatch } from 'react-redux';
+
 const ProfilePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { darkMode } = useSelector((state: RootState) => state.theme);
@@ -47,13 +48,13 @@ const ProfilePage: React.FC = () => {
         phone: userData.phone ? parseInt(userData.phone, 10) : undefined,
       };
       const response = await axiosInstance.post('/users/profile', updatedFormData, { withCredentials: true });
-      
+         console.log(response);
       if (response.status === 200) {
         triggerToast("Profile updated successfully", "success");
         setIsSaved(true); 
 
         const getResponse = await axiosInstance.get('/users/profile', { withCredentials: true });
-     
+      
         
         if (getResponse.status === 200) {
              console.log("this responeese");
@@ -126,6 +127,8 @@ const ProfilePage: React.FC = () => {
             type={toastType}
           />
         </form>
+
+  
       </div>
     </div>
   );

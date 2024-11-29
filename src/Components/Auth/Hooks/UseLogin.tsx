@@ -11,7 +11,7 @@ import { handleAxiosError } from "../../../utils/errorHandling";
 
 const UseLogin = () => {
   const dispatch = useDispatch();
-  const { triggerToast } = useToast();
+   const { showToast, setShowToast, toastMessage, toastType ,triggerToast} = useToast();
 
   const [login, setLogin] = useState<ILogin>({
     email: "",
@@ -73,12 +73,15 @@ const UseLogin = () => {
         );
         navigate(ROUTES.PROTECTED.HOME);
    
-        triggerToast("Login successful!", "success"); // Trigger success toast
+        triggerToast("Login successful!", "success"); 
+         setShowToast(true);
       }
     } catch (error) {
+      
       const errorMessage = handleAxiosError(error);
+       setShowToast(true);
       console.log(errorMessage);
-      triggerToast("Login failed. Please try again.", "error"); // Trigger error toast
+      triggerToast(errorMessage, "error"); 
     } finally {
       setLoading(false);
     }
@@ -90,6 +93,11 @@ const UseLogin = () => {
     error,
     handleLogin,
     handleChange,
+    showToast,
+    toastMessage,
+    toastType,
+    setShowToast
+    
   };
 };
 

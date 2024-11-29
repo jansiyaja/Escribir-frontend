@@ -12,7 +12,9 @@ export interface User {
     location:string;
     bio:string;
     phone?:string;
-    image?:string
+  image?: string
+  isPremium: boolean
+  twoFactorEnabled:boolean
   }
   
   

@@ -10,7 +10,7 @@
    PROTECTED: {
      HOME: "/",
       
-
+    SETTINGS:"/settings",
     PROFILE: "/profile",
     NOTIFICATIONS: "/notifications",
     DASHBOARD: "/dashboard",

@@ -29,6 +29,10 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 import { ROUTES } from './routes/Route';
 import NotFound from './Pages/Common/NotFound';
+import SettingsPage from './Pages/Settings/SettingsPage';
+
+import PaymentCancelPage from './Pages/Settings/PaymentCancel';
+import { PaymentSuccessPageWrapper } from './Pages/Settings/PaymentSuccessPage';
 
 
 
@@ -58,8 +62,10 @@ function App() {
              
               <Route element={<ProtectedRoute />}>
                 <Route path={ROUTES.PROTECTED.HOME} element={<HomePage />} />
+                <Route path={ROUTES.PROTECTED.SETTINGS} element={<SettingsPage />} />
               
-
+                <Route path="/payment-success" element={<PaymentSuccessPageWrapper />} />
+                <Route path="/paymentcancelled" element={<PaymentCancelPage />} />
                 <Route path={ROUTES.PROTECTED.PROFILE} element={<UserProfile />} />
                 <Route path={ROUTES.PROTECTED.NOTIFICATIONS} element={<NotificationPage />} />
                 <Route path={ROUTES.PROTECTED.DASHBOARD} element={<Dashboard />} />

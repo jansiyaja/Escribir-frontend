@@ -21,6 +21,9 @@ import { useState } from "react";
     setToastMessage(message);
     setToastType(type);
     setShowToast(true);
+     setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
     
   };
   return { showToast, setShowToast, toastMessage, toastType, triggerToast };

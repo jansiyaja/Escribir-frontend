@@ -5,7 +5,8 @@ import store from '../../redux/store/store';
 
 
 
-const baseURL = "https://escribir1.furnishop.site"
+
+const baseURL = "http://localhost:3000"
 
  const axiosInstance = axios.create({
     baseURL,
@@ -37,6 +38,7 @@ axiosInstance.interceptors.response.use(
 
         if (error.response) {
             console.error('Error Data:', error.response.data);
+             console.error('Original Request:', originalRequest);
             
         }
 
@@ -50,6 +52,8 @@ axiosInstance.interceptors.response.use(
                 const response = await axiosInstance.post('/users/verify-token', {
                     withCredentials: true, 
                 });
+                console.log("res",response);
+                
 
                 if (response.status === 200) {
                     const newAccessToken = response.data.accessToken;
@@ -80,7 +84,7 @@ axiosInstance.interceptors.response.use(
             console.log(error);
             
             console.log('Access token is invalid. Logging out...');
-            // window.location.href = '/login';
+            window.location.href = '/login';
         }
 
         return Promise.reject(error);
