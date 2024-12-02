@@ -27,7 +27,7 @@ const BlogCard: React.FC = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axiosInstance.get('/blog', { withCredentials: true });
+        const response = await axiosInstance.get('/blog');
         console.log("fetching the blogs");
         
         setBlogPosts(response.data);

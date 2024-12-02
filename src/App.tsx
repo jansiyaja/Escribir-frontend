@@ -33,6 +33,11 @@ import SettingsPage from './Pages/Settings/SettingsPage';
 
 import PaymentCancelPage from './Pages/Settings/PaymentCancel';
 import { PaymentSuccessPageWrapper } from './Pages/Settings/PaymentSuccessPage';
+import Layout from './Layout';
+import Advertisement from './Pages/Common/Advertisement';
+import CreateAd from './Pages/Advertisement/createAd';
+import AddBusiness from './Pages/Advertisement/AddBusiness';
+import TermsAndConditions from './Pages/Common/Terms&Services';
 
 
 
@@ -50,22 +55,26 @@ function App() {
         <ErrorBoundary>
           <Router>
             <Routes>
-            
+              <Route element={<Layout />}>
               <Route path={ROUTES.PUBLIC.REGISTER} element={<CommonPage page="register" />} />
               <Route path={ROUTES.PUBLIC.OTP_VERIFICATION} element={<CommonPage page="otp" />} />
               <Route path={ROUTES.PUBLIC.LOGIN} element={<CommonPage page="login" />} />
               <Route path={ROUTES.PUBLIC.ADMIN_LOGIN} element={<LoginPage />} />
               <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
               <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
-           
+              <Route path={ROUTES.PUBLIC.HOME} element={<HomePage />} />
+              <Route path={ROUTES.PUBLIC.ADVERTISEMENT} element={<Advertisement />} />
 
              
               <Route element={<ProtectedRoute />}>
-                <Route path={ROUTES.PROTECTED.HOME} element={<HomePage />} />
-                <Route path={ROUTES.PROTECTED.SETTINGS} element={<SettingsPage />} />
+                
+                  <Route path={ROUTES.PROTECTED.SETTINGS} element={<SettingsPage />} />
+                  <Route path={ROUTES.PROTECTED.CREATEADD} element={<CreateAd/>}/>
+                  <Route path={ROUTES.PROTECTED.BUISNESS} element={<AddBusiness/>}/>
+                  <Route path={ROUTES.PROTECTED.TERMS_AND_CONDITION} element={<TermsAndConditions/>}/>
               
-                <Route path="/payment-success" element={<PaymentSuccessPageWrapper />} />
-                <Route path="/paymentcancelled" element={<PaymentCancelPage />} />
+                <Route path={ROUTES.PROTECTED.PAYMENT_SUCCESS} element={<PaymentSuccessPageWrapper />} />
+                <Route path={ ROUTES.PROTECTED.PAYMENT_CANCELLED} element={<PaymentCancelPage />} />
                 <Route path={ROUTES.PROTECTED.PROFILE} element={<UserProfile />} />
                 <Route path={ROUTES.PROTECTED.NOTIFICATIONS} element={<NotificationPage />} />
                 <Route path={ROUTES.PROTECTED.DASHBOARD} element={<Dashboard />} />
@@ -75,7 +84,7 @@ function App() {
                 <Route path={ROUTES.PROTECTED.SINGLE_BLOG} element={<Blog page="singleblog" />} />
                 <Route path={ROUTES.PROTECTED.CHAT} element={<Chat />} />
               </Route>
-
+           </Route>
             
               <Route element={<AdminProtectedRoute />}>
                 <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
@@ -87,6 +96,7 @@ function App() {
               
               <Route path="*" element={<NotFound />} />
             </Routes>
+            
           </Router>
         </ErrorBoundary>
         </div>

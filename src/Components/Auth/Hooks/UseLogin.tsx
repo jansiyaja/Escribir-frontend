@@ -71,7 +71,7 @@ const UseLogin = () => {
             refreshToken: response.data.refreshToken,
           })
         );
-        navigate(ROUTES.PROTECTED.HOME);
+        navigate(ROUTES.PUBLIC.HOME);
    
         triggerToast("Login successful!", "success"); 
          setShowToast(true);

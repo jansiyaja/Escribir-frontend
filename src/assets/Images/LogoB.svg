@@ -8,8 +8,8 @@
   </text>
   
  
-  <path d="M245 65 l5,-5 l5,5 l-5,-15 z" fill="#2c3e50"/>
+  <path d="M245 65 l5,-5 l5,5 l-5,-15 z" fill="#fff"/>
   
 
-  <path d="M70 75 Q 150 65, 230 75" stroke="#2c3e50" fill="none" stroke-width="1.5"/>
+  <path d="M70 75 Q 150 65, 230 75" stroke="#fff" fill="none" stroke-width="1.5"/>
 </svg>

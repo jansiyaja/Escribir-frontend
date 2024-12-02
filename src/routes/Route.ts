@@ -4,12 +4,14 @@
     OTP_VERIFICATION: "/OTP-Verification",
     LOGIN: "/login",
     ADMIN_LOGIN: "/adminLogin",
-      ABOUT: "/about",
-    CONTACT: "/contact",
+     ABOUT: "/about",
+     CONTACT: "/contact",
+     HOME: "/",
+     ADVERTISEMENT:"/advertisement"
   },
    PROTECTED: {
-     HOME: "/",
-      
+   PAYMENT_CANCELLED:"/paymentcancelled" ,
+    PAYMENT_SUCCESS :"/payment-success",
     SETTINGS:"/settings",
     PROFILE: "/profile",
     NOTIFICATIONS: "/notifications",
@@ -18,7 +20,10 @@
     BLOG_EDITOR: "/blog",
     EDIT_BLOG: "/editblog/:id",
     SINGLE_BLOG: "/singleblog/:id",
-    CHAT: "/Chat",
+     CHAT: "/Chat",
+     CREATEADD: "/createadd",
+     BUISNESS: "/addbuisness",
+    TERMS_AND_CONDITION:'/terms_and_condition'
   },
   ADMIN: {
     DASHBOARD: "/adminDashBord",

@@ -13,6 +13,7 @@ import DashBoardSideBar from "./User/DashBoardSideBar";
 import ToggleTheme from "./ToggleTheme";
 import { Feature } from "../Interfaces/Components";
 import { userLogout } from "../services/Api/userApi";
+import { ROUTES } from "../routes/Route";
 
 
 const Header = () => {
@@ -45,25 +46,24 @@ const Header = () => {
 
   return (
     <div className={`w-full border-b top-0 sticky z-50 ${darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200"}`}>
-      <nav className="max-w-7xl mx-auto px-6">
+      <nav className="w-full mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center space-x-8">
+          <div className="flex items-center space-x-6 md:space-x-8">
             <Link to="/" className="flex-shrink-0">
               <img src={darkMode ? darkLogo : lightLogo} alt="Logo" className="h-10" />
             </Link>
 
-          
             <div className="md:hidden">
               <IconButton onClick={() => setMenuOpen(!menuOpen)} variant="ghost">
                 {menuOpen ? <HiXMark className="w-6 h-6 text-gray-800" /> : <HiListBullet className="w-6 h-6 text-gray-800" />}
               </IconButton>
             </div>
-
-         
-            <div className={`hidden md:flex items-center space-x-6 ${darkMode ? "text-gray-200" : "text-gray-600"}`}>
-              <Link to="/" className="hover:text-gray-400">Home</Link>
-              <Link to="/about" className="hover:text-gray-400">About</Link>
-              <Link to="/contact" className="hover:text-gray-400">Contact</Link>
+ 
+            <div className={`hidden md:flex items-center space-x-8 ${darkMode ? "text-white" : "text-gray-600"}`}>
+              <Link to={ROUTES.PUBLIC.HOME} className=" hover:text-blue-600">Home</Link>
+              <Link to={ROUTES.PUBLIC.ABOUT} className=" hover:text-blue-600">About</Link>
+              <Link to={ROUTES.PUBLIC.CONTACT} className=" hover:text-blue-600">Contact</Link>
+              <Link to={ROUTES.PUBLIC.ADVERTISEMENT} className=" hover:text-blue-600">Advertise with Us</Link>
             </div>
           </div>
 
@@ -81,8 +81,7 @@ const Header = () => {
             </div>
           </div>
 
-         
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-6 md:space-x-6 ">
             <Link to="/notifications">
               <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
                 <HiOutlineBell className={`w-5 h-5 ${darkMode ? "text-gray-200" : "text-gray-800"}`} />
@@ -96,7 +95,6 @@ const Header = () => {
             <ToggleTheme />
           </div>
 
-        
           <Popover.Root>
             <Popover.Trigger>
               <div className="cursor-pointer">
@@ -109,7 +107,7 @@ const Header = () => {
               className={`rounded-lg shadow-lg p-4 z-50 ${darkMode ? "bg-gray-800 text-white" : "bg-white"}`}
             >
               <DashBoardSideBar features={sidebarFeatures[currentView] || sidebarFeatures["dashboard"]} />
-            
+
               <div className="flex flex-col md:hidden space-y-2 mt-3">
                 <Link to="/notifications" className="flex items-center">
                   <HiOutlineBell className={`w-5 h-5 mr-2 ${darkMode ? "text-gray-200" : "text-gray-800"}`} />
@@ -143,10 +141,11 @@ const Header = () => {
         </div>
 
         {menuOpen && (
-          <div className={`md:hidden flex flex-col space-y-2 mt-4 ${darkMode ? "text-gray-200" : "text-gray-600"}`}>
-            <Link to="/" className="hover:text-gray-400">Home</Link>
-            <Link to="/about" className="hover:text-gray-400">About</Link>
-            <Link to="/contact" className="hover:text-gray-400">Contact</Link>
+          <div className={`md:hidden flex flex-col space-y-3 mt-4 ${darkMode ? "text-gray-200" : "text-gray-600"}`}>
+            <Link to={ROUTES.PUBLIC.HOME} className="text-gray-600 hover:text-blue-600">Home</Link>
+            <Link to={ROUTES.PUBLIC.ABOUT} className="text-gray-600 hover:text-blue-600">About</Link>
+            <Link to={ROUTES.PUBLIC.CONTACT} className="text-gray-600 hover:text-blue-600">Contact</Link>
+            <Link to={ROUTES.PUBLIC.ADVERTISEMENT} className="text-gray-600 hover:text-blue-600">Advertise with Us</Link>
           </div>
         )}
       </nav>

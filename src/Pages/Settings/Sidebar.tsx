@@ -1,7 +1,6 @@
 import React from "react";
 import {
   User,
-  Bell,
   Crown,
   Shield,
   CreditCard,
@@ -20,7 +19,6 @@ type SidebarProps = {
 const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSection }) => {
   const sidebarItems: SidebarItem[] = [
     { id: "profile", label: "Profile", icon: User },
-    { id: "notifications", label: "Notifications", icon: Bell },
     { id: "premium", label: "Premium Plans", icon: Crown },
     { id: "security", label: "Security", icon: Shield },
     { id: "billing", label: "Billing", icon: CreditCard },
