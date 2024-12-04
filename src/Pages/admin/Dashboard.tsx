@@ -1,9 +1,10 @@
-
+import { useEffect, useState } from 'react';
 import { 
-
-  Bell, 
-  Search, 
-
+  Users, 
+  FileText, 
+  Briefcase, 
+  DollarSign,
+  LucideProps, 
 } from 'lucide-react';
 import { 
   LineChart, 
@@ -17,191 +18,272 @@ import {
   PieChart, 
   Pie, 
   Cell,
-  BarChart, 
-  Bar 
 } from 'recharts';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../../routes/Route';
+import lightLogo from "../../assets/Images/Logo.svg"
+import { LIST_BLOGS, LIST_CLIENTS, LIST_USERS } from '../../services/Api/adminApi';
 
-const DashBoardAdmin = () => {
-  // Sample data for charts and statistics
-  const monthlyRevenueData = [
-    { month: 'Jan', revenue: 4000, users: 2400 },
-    { month: 'Feb', revenue: 3000, users: 1398 },
-    { month: 'Mar', revenue: 2000, users: 9800 },
-    { month: 'Apr', revenue: 2780, users: 3908 },
-    { month: 'May', revenue: 1890, users: 4800 },
-    { month: 'Jun', revenue: 2390, users: 3800 }
-  ];
+interface DataItem {
+  createdAt?: string; 
+  username?: string;
+  heading?: string;
+  businessName?: string;
+}
+interface DashboardData {
+  overviewStats: {
+    icon: React.ComponentType<LucideProps>;
+    title: string;
+    value: string;
+    color: string;
+    change?: string;
+  }[];
+  monthlyData: {
+    month: string;
+    users: number;
+    blogs: number;
+    clients: number;
+    revenue: number;
+  }[];
+  revenueBreakdown: {
+    name: string;
+    value: number;
+    color: string;
+  }[];
+  latestActivities: {
+    icon: React.ComponentType<LucideProps>;
+    title: string;
+    description: string;
+    time: string;
+  }[];
+}
 
-  const revenueSourceData = [
-    { name: 'Subscriptions', value: 400, color: '#0088FE' },
-    { name: 'Product Sales', value: 300, color: '#00C49F' },
-    { name: 'Consulting', value: 200, color: '#FFBB28' }
-  ];
 
-  const performanceData = [
-    { name: 'Conversion Rate', value: 65, color: '#8884d8' },
-    { name: 'Customer Satisfaction', value: 85, color: '#82ca9d' },
-    { name: 'Retention Rate', value: 75, color: '#ffc658' }
-  ];
+const WebsiteAdminDashboard = () => {
+const [dashboardData, setDashboardData] = useState<DashboardData>({
+  overviewStats: [],
+  monthlyData: [],
+  revenueBreakdown: [],
+  latestActivities: [],
+});
 
-  const topStatistics = [
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const [usersResponse, blogsResponse, clientResponse] = await Promise.all([
+          LIST_USERS(),
+          LIST_BLOGS(),
+          LIST_CLIENTS(),
+        ]);
+
+        // Overview Stats Calculation
+        const usersCount = usersResponse.data.length;
+        const blogsCount = blogsResponse.data.length;
+        const clientCount = clientResponse.data.length;
+
+        let totalSubscriptionAmount = 0;
+        usersResponse.data.forEach((user: any) => {
+          if (user.subscriptionId && user.subscriptionId.amount) {
+            totalSubscriptionAmount += user.subscriptionId.amount;
+          }
+        });
+
+        const totalPaymentAmount = clientResponse.data.reduce((total: number, item: any) => {
+          return total + parseFloat(item.paymentAmount || 0);
+        }, 0);
+
+        const totalRevenue = totalSubscriptionAmount + totalPaymentAmount;
+
+        const revenueBreakdown = [
+          { name: 'Premium ', value: totalSubscriptionAmount, color: '#0088FE' },
+          { name: 'Advertisement', value: totalPaymentAmount, color: '#00C49F' },
+        ];
+
+ const  overviewStats= [
     { 
+      icon: Users, 
+      title: 'Total Users', 
+      value: usersCount.toString(), 
+      color: 'text-blue-600 bg-blue-50' 
+    },
+    { 
+      icon: FileText, 
+      title: 'Total Blogs', 
+       value: blogsCount.toString(), 
+      color: 'text-green-600 bg-green-50' 
+    },
+    { 
+      icon: Briefcase, 
+      title: 'Total Clients', 
+       value: clientCount.toString(), 
+      change: '+5.7%',
+      color: 'text-purple-600 bg-purple-50' 
+    },
+    { 
+      icon: DollarSign, 
       title: 'Total Revenue', 
-      value: '$452,893', 
-      change: '+12.5%', 
-      color: 'text-green-500' 
-    },
-    { 
-      title: 'New Users', 
-      value: '3,521', 
-      change: '+8.2%', 
-      color: 'text-blue-500' 
-    },
-    { 
-      title: 'Active Projects', 
-      value: '126', 
-      change: '+5.1%', 
-      color: 'text-purple-500' 
-    },
-    { 
-      title: 'Customer Satisfaction', 
-      value: '92%', 
-      change: '+3.7%', 
-      color: 'text-orange-500' 
+      value: totalRevenue.toString(),
+      change: '+15.3%',
+      color: 'text-orange-600 bg-orange-50' 
     }
-  ];
+  ]
+
+        // Group data by month
+        const groupByMonth = (data: any[]) =>
+          data.reduce((acc: any, item: any) => {
+            const month = new Date(item.createdAt).toLocaleString('default', { month: 'short' });
+            acc[month] = (acc[month] || 0) + 1;
+            return acc;
+          }, {});
+
+        const userCounts = groupByMonth(usersResponse.data);
+        const blogCounts = groupByMonth(blogsResponse.data);
+        const clientCounts = groupByMonth(clientResponse.data);
+
+        const months = [...new Set([...Object.keys(userCounts), ...Object.keys(blogCounts), ...Object.keys(clientCounts)])];
+        const monthlyData = months.map((month) => ({
+          month,
+          users: userCounts[month] || 0,
+          blogs: blogCounts[month] || 0,
+          clients: clientCounts[month] || 0,
+          revenue: (clientCounts[month] || 0) * 300, // Example revenue logic
+        }));
+
+        const getLatestEntry = (data: DataItem[]): DataItem | undefined =>
+          data
+            .filter((item) => item.createdAt) // Ensure valid `createdAt`
+            .sort((a, b) => new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime())[0];
+
+        const latestUser = getLatestEntry(usersResponse.data);
+     
+        const latestBlog = getLatestEntry(blogsResponse.data);
+     
+        
+        const latestClient = getLatestEntry(clientResponse.data);
+              console.log(latestClient);
+
+        const latestActivities = [
+  latestUser && {
+    icon: Users,
+    title: 'New User Signup',
+    description: `${latestUser.username || "A user"} joined the platform.`,
+    time: latestUser.createdAt ? new Date(latestUser.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A',
+  },
+  latestBlog && {
+    icon: FileText,
+    title: 'Blog Published',
+    description: `${latestBlog.heading || "A blog"} was  Published.`,
+    time: latestBlog.createdAt ? new Date(latestBlog.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A',
+  },
+  latestClient && {
+    icon: Briefcase,
+    title: 'New Client',
+    description: `${latestClient.businessName || "A client"} added advertisement.`,
+    time: latestClient.createdAt ? new Date(latestClient.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A',
+  },
+].filter(Boolean) as { icon: React.ComponentType<LucideProps>; title: string; description: string; time: string }[]; 
+
+        setDashboardData(() => ({
+          overviewStats,
+          monthlyData,
+          revenueBreakdown,
+          latestActivities
+        }));
+
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   return (
     <div className="flex bg-gray-50 min-h-screen">
-      {/* Sidebar */}
-      <div className="w-64 bg-white border-r shadow-lg p-6">
-        <div className="flex items-center mb-10">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mr-3"></div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
-            <p className="text-xs text-gray-500">Business Analytics</p>
-          </div>
+      <div className="flex-1 p-10">
+        <div>
+          <Link to={ROUTES.ADMIN.DASHBOARD} className="flex-shrink-0">
+            <img src={lightLogo} alt="Logo" className="h-14" />
+          </Link>
+          <h1 className="text-3xl font-bold mb-8 font-bodoni">Website Dashboard</h1>
         </div>
 
-        <nav>
-          {[
-            'Dashboard', 'Analytics', 'Users', 'Projects', 'Reports', 'Settings'
-          ].map((item) => (
-            <div 
-              key={item}
-              className="flex items-center p-3 rounded-lg mb-2 cursor-pointer hover:bg-blue-50 text-gray-600 hover:text-blue-600"
-            >
-              {item}
-            </div>
-          ))}
-        </nav>
+<div className="grid grid-cols-4 gap-6 mb-8">
+          {dashboardData.overviewStats.map((stat, index) => (
+    
+    <div key={index} className={`p-6 rounded-2xl shadow-md ${stat.color} flex items-center justify-between`}>
+      <div className="p-3 bg-white/20 rounded-full flex items-center justify-center">
+        <stat.icon className="text-white" size={24} />
       </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 p-8">
-        {/* Header */}
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
-            <p className="text-gray-500">Comprehensive Business Insights</p>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="pl-10 pr-4 py-2 rounded-full bg-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-            </div>
-            <Bell className="text-gray-600 hover:text-blue-600 cursor-pointer" size={24} />
-          </div>
-        </header>
-
-        {/* Top Statistics */}
-        <div className="grid grid-cols-4 gap-6 mb-8">
-          {topStatistics.map((stat, index) => (
-            <div 
-              key={index} 
-              className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition"
-            >
-              <p className="text-sm text-gray-500 mb-2">{stat.title}</p>
-              <div className="flex items-center justify-between">
-                <h3 className={`text-2xl font-bold ${stat.color}`}>{stat.value}</h3>
-                <span className={`text-xs ${stat.color} bg-green-100 px-2 py-1 rounded-full`}>
-                  {stat.change}
-                </span>
-              </div>
-            </div>
-          ))}
+      <div>
+        <p className="text-sm opacity-75 mb-1">{stat.title}</p>
+        <div className="flex items-center">
+          <h3 className="text-2xl font-bold mr-3">{stat.value}</h3>
         </div>
+      </div>
+    </div>
+  ))}
+</div>
 
-        {/* Charts Section */}
+
         <div className="grid grid-cols-3 gap-6">
-          {/* Revenue Line Chart */}
           <div className="col-span-2 bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Monthly Revenue Trends</h2>
+            <h3 className="text-lg font-semibold mb-6">Monthly Data</h3>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyRevenueData}>
+              <LineChart data={dashboardData.monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#8884d8" name="Revenue" />
-                <Line type="monotone" dataKey="users" stroke="#82ca9d" name="Users" />
+                <Line type="monotone" dataKey="users" stroke="#8884d8" />
+                <Line type="monotone" dataKey="blogs" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="clients" stroke="#ffc658" />
               </LineChart>
             </ResponsiveContainer>
           </div>
 
-          {/* Revenue Sources Pie Chart */}
           <div className="bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Revenue Sources</h2>
+            <h3 className="text-lg font-semibold mb-6">Revenue Breakdown</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie
-                  data={revenueSourceData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
-                  {revenueSourceData.map((entry, index) => (
+                <Pie data={dashboardData.revenueBreakdown} dataKey="value" nameKey="name" outerRadius={80} fill="#8884d8">
+                  {dashboardData.revenueBreakdown.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
-                <Legend />
               </PieChart>
             </ResponsiveContainer>
           </div>
-
-          {/* Performance Bar Chart */}
-          <div className="col-span-3 bg-white rounded-2xl shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Performance Metrics</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" fill="#8884d8">
-                  {performanceData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
         </div>
+
+                 <div className="col-span-3 bg-white rounded-2xl shadow-md p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Latest Activities</h2>
+            
+            </div>
+            <div className="space-y-4">
+              {dashboardData.latestActivities.map((activity, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center bg-gray-50 p-4 rounded-lg hover:bg-gray-100 transition"
+                >
+                  <div className="mr-4 p-3 bg-blue-50 rounded-full">
+                    <activity.icon className="text-blue-600" size={20} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-sm">{activity.title}</h3>
+                    <p className="text-xs text-gray-500">{activity.description}</p>
+                  </div>
+                  <span className="text-xs text-gray-400">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </div>
       </div>
     </div>
   );
 };
 
-export default DashBoardAdmin;
+export default WebsiteAdminDashboard;
