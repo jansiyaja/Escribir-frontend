@@ -11,6 +11,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/store';
 import CommentSection from './Comment';
 import {  deleteReaction, getSingleBlog, reportBlog, userBlogList } from '../../../services/Api/blogApi';
+import { Advertisement } from '../../../Interfaces/slice';
+import VideoAd from '../../Advertisement/VideoAd';
+import ImageAd from '../../Advertisement/ImageAd';
+import TextAd from '../../Advertisement/TextAd';
+
 
 const reactionTypes = [
   { emoji: '👍', label: 'Like' },
@@ -34,13 +39,17 @@ const SingleBlog: React.FC = () => {
   const [comments, setComments] = useState<comment[]>([]);
   const [newComment, setNewComment] = useState<string>('');
    const [similarBlogs, setSimilarBlogs] = useState<BlogPostCardProps[]>([]);
-
+  const [currentAd, setCurrentAd] = useState<Advertisement | null>(null);
+  const [adVisible, setAdVisible] = useState(true);
   const [userReactions, setUserReactions] = useState<{ [key: string]: boolean }>({});
 
   const { user } = useSelector((state: RootState) => state.auth);
+   const advertisements = useSelector((state: RootState) => state.ad.advertisement);
+
 
   const userId = user?._id;
   const autherId = blogPost?.author_id._id;
+  if(!advertisements) return
 
   useEffect(() => {
     const fetchBlogPost = async () => {
@@ -84,6 +93,19 @@ const SingleBlog: React.FC = () => {
     fetchBlogPost();
   }, [id, userId]);
 
+    useEffect(() => {
+    if (advertisements.length > 0 && blogPost) {
+      const relevantAd = advertisements.find(
+        (ad) =>
+          ad.targetAudience === 'Blog Page' ||
+          (blogPost.tag && ad.industry && blogPost.tag.includes(ad.industry))
+       
+      );
+      setAdVisible(true)
+      setCurrentAd(relevantAd || null);
+    }
+  }, [advertisements, blogPost]);
+
    useEffect(() => {
     const fetchSimilarBlogs = async () => {
       try {
@@ -101,7 +123,10 @@ const SingleBlog: React.FC = () => {
   }, [autherId]);
 
  
-   
+  const handleAdSkip = () => {
+       setAdVisible(false)
+    setCurrentAd(null); 
+  };
 
 
   const handleReport = () => {
@@ -201,6 +226,33 @@ const SingleBlog: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto ">
+
+      {adVisible && currentAd && (
+        <>
+          {currentAd.format === "Video Ad" ? (
+            <VideoAd
+              title={currentAd.title}
+              link={currentAd.link}
+              thumbnailPreview={currentAd.thumbnailPreview}
+              onSkip={handleAdSkip}
+            />
+          ) :currentAd.format === "Image Ad" ? (
+            <ImageAd
+              title={currentAd.title}
+              link={currentAd.link}
+            thumbnailPreview={currentAd.thumbnailPreview}
+            onSkip={handleAdSkip}
+            />
+                  )
+                      : currentAd.format === "Text Ad" ? (
+            <TextAd
+              title={currentAd.title}
+              link={currentAd.link}
+              textContent={currentAd.thumbnailPreview}
+            />
+          ):null}
+        </>
+      )}
       <SingleBlogCom blogPost={blogPost} />
 
       <div className="flex justify-between mt-4">

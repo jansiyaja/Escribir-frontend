@@ -6,20 +6,22 @@ import { PersistConfig } from 'redux-persist/es/types';
 import authReducer from '../slices/authSlice'; 
 import themeReducer from '../slices/themeSlice';
 import adminReducer from '../slices/adminSlice'
+import advertisementRedcer from '../slices/addSlice'
 export type RootState = ReturnType<typeof rootReducer>;
 
 
 const rootReducer = combineReducers({
   auth: authReducer,
   theme:themeReducer,
-  admin:adminReducer
+  admin: adminReducer,
+  ad:advertisementRedcer
 });
 
 
 const persistConfig: PersistConfig<RootState> = {
   key: 'root',
   storage,
-  whitelist: ['auth','theme','admin'], 
+  whitelist: ['auth','theme','admin','ad'], 
 };
 
 

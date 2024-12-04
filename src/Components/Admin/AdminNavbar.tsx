@@ -12,6 +12,7 @@ import {
   HiPower,
   HiOutlineGlobeAlt,
   HiOutlineUserGroup,
+  HiOutlineAcademicCap,
 
 } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
@@ -46,6 +47,12 @@ const navigate=useNavigate()
         <Link to={'/adminDashBord'}>
         <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
           <HiOutlineHome className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
+        </IconButton>
+       </Link>
+       
+        <Link to={'/DashBord'}>
+        <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
+          <HiOutlineAcademicCap className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>
        </Link>
        

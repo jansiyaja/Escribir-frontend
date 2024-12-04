@@ -150,3 +150,14 @@ export interface Tag {
   icons?: FloatingIcon[];
   animationDuration?: number;
 }
+
+/////////////////////////
+ export interface AdDetails {
+  title: string;
+  targetAudience: string;
+  format: string;
+  industry: string;
+   thumbnailPreview: string | null;
+   link: string
+   textContent:string
+}

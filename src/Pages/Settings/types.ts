@@ -27,3 +27,9 @@ export type SectionProps = {
     amount: number;
     lastPaymentDate: string;
   };
+export interface PaymentSuccessProps {
+  amount: number;
+  orderId: string;
+  customerEmail: string;
+  businessName?: string;
+}

@@ -4,10 +4,20 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/Route";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
+import { useEffect, useState } from "react";
 
 
 const Advertisement = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const [isClient,setIsClient]=useState(false)
+
+  if (!user) return
+  useEffect(() => {
+    if (user.role == 'client') {
+      setIsClient(true)
+    }
+  })
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900" : "bg-gradient-to-b from-gray-100 to-white"}`}>
     
@@ -71,7 +81,7 @@ const Advertisement = () => {
           Compare this to traditional ad costs, and you’ll see how much more you can achieve at a fraction of the price.
         </p>
 
-        {/* Service Breakdown */}
+       
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 mb-12">
           {[ 
            
@@ -86,7 +96,7 @@ const Advertisement = () => {
             </div>
           ))}
         </div>
-
+   
         <Link to={ROUTES.PROTECTED.CREATEADD}>
           <button className={`bg-yellow-400 text-black px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-yellow-300 transition ${darkMode ? "text-white" : ""}`}>
             Start Your Campaign Now
@@ -107,7 +117,7 @@ const Advertisement = () => {
         </div>
       </section>
 
-      {/* Create Your Ad Section */}
+     
       <section className={`relative bg-cover bg-center bg-[url('https://via.placeholder.com/1600x900')] text-white ${darkMode ? "bg-black" : ""}`}>
         <div className="bg-black bg-opacity-50 py-16 md:py-24">
           <div className="container mx-auto text-center px-6">
@@ -115,11 +125,27 @@ const Advertisement = () => {
             <p className={`text-lg md:text-xl ${darkMode ? "text-gray-300" : "text-gray-200"} max-w-2xl mx-auto mb-8`}>
               With our simple and intuitive tools, you can create a professional-looking ad in just a few clicks.
             </p>
-            <Link to={ROUTES.PROTECTED.BUISNESS}>
-              <button className="bg-green-500 px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-green-400 transition">
-                Start Now
-              </button>
-            </Link>
+            {isClient ? (
+          <Link to={ROUTES.PROTECTED.CREATEADD}>
+            <button
+              className={`bg-yellow-400 text-black px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-yellow-300 transition ${
+                darkMode ? "text-white" : ""
+              }`}
+            >
+              Start Now
+            </button>
+          </Link>
+        ) : (
+          <Link to={ROUTES.PROTECTED.BUISNESS}>
+            <button
+              className={`bg-green-500 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-green-400 transition ${
+                darkMode ? "text-black" : ""
+              }`}
+            >
+              Register Your Business
+            </button>
+          </Link>
+        )}
           </div>
         </div>
       </section>

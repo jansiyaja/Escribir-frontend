@@ -6,6 +6,7 @@ import { setUser } from '../../redux/slices/authSlice';
 import { RootState } from '../../redux/store/store';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../routes/Route';
+import { PaymentSuccessProps } from './types';
 
 export const PaymentSuccessPageWrapper = () => {
   const queryParams = new URLSearchParams(window.location.search);
@@ -22,11 +23,7 @@ export const PaymentSuccessPageWrapper = () => {
   );
 };
 
-interface PaymentSuccessProps {
-  amount: number;
-  orderId: string;
-  customerEmail: string;
-}
+
 
 const PaymentSuccessPage: React.FC<PaymentSuccessProps> = ({ 
   amount, 
@@ -60,7 +57,7 @@ const PaymentSuccessPage: React.FC<PaymentSuccessProps> = ({
           isPremium: true,
         };
           dispatch(setUser(updatedUser));
-          navigate(ROUTES.PROTECTED.HOME)
+          navigate(ROUTES.PUBLIC.HOME)
           
        
       }

@@ -38,6 +38,8 @@ import Advertisement from './Pages/Common/Advertisement';
 import CreateAd from './Pages/Advertisement/createAd';
 import AddBusiness from './Pages/Advertisement/AddBusiness';
 import TermsAndConditions from './Pages/Common/Terms&Services';
+import  { AddPaymentSuccessWrapper } from './Pages/Advertisement/PaymentSuccess';
+import DashBoardAdmin from './Pages/admin/Dashboard';
 
 
 
@@ -72,6 +74,7 @@ function App() {
                   <Route path={ROUTES.PROTECTED.CREATEADD} element={<CreateAd/>}/>
                   <Route path={ROUTES.PROTECTED.BUISNESS} element={<AddBusiness/>}/>
                   <Route path={ROUTES.PROTECTED.TERMS_AND_CONDITION} element={<TermsAndConditions/>}/>
+                  <Route path={ROUTES.PROTECTED.ADVERTISEMENT_PAYMENT_SUCESS} element={<AddPaymentSuccessWrapper/>}/>
               
                 <Route path={ROUTES.PROTECTED.PAYMENT_SUCCESS} element={<PaymentSuccessPageWrapper />} />
                 <Route path={ ROUTES.PROTECTED.PAYMENT_CANCELLED} element={<PaymentCancelPage />} />
@@ -87,7 +90,8 @@ function App() {
            </Route>
             
               <Route element={<AdminProtectedRoute />}>
-                <Route path={ROUTES.ADMIN.DASHBOARD} element={<AdminDashboard />} />
+                <Route path={ROUTES.ADMIN.ADMINDASHBOARD} element={<AdminDashboard />} />
+                <Route path={ROUTES.ADMIN.DASHBOARD} element={<DashBoardAdmin />} />
                 <Route path={ROUTES.ADMIN.TAGS} element={<Tags />} />
                 <Route path={ROUTES.ADMIN.REPORTS} element={<Report />} />
                 <Route path={ROUTES.ADMIN.SINGLE_REPORT} element={<SinglePage />} />

@@ -5,7 +5,8 @@ import { ROUTES } from '../../routes/Route';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/store';
 import { loadStripe } from '@stripe/stripe-js';
-import axiosInstance from '../../services/Api/axiosInstance';
+
+import { MAKEPAYMENT } from '../../services/Api/clientApi';
 
 const AddBusiness = () => {
   const [formData, setFormData] = useState({
@@ -47,8 +48,8 @@ const AddBusiness = () => {
 
     
     try {
-      const response = await axiosInstance.post('/client/makePayment', { email }, { withCredentials: true });
-      console.log(response);
+      const response = await MAKEPAYMENT(email,formData.businessName)
+   
       if (response.status === 201) {
         setPaymentStatus('Payment successful');
         const sessionUrl = response.data;
@@ -121,7 +122,7 @@ const AddBusiness = () => {
               type="text"
               id="userName"
               name="userName"
-              value={formData.userName}
+              value={user?.username||formData.userName}
               onChange={handleChange}
               placeholder="Enter your name"
               required
@@ -143,7 +144,7 @@ const AddBusiness = () => {
             />
           </div>
 
-          {/* Pricing Information */}
+         
           <div className={`p-4 rounded-lg mb-6 ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
             <h3 className="text-xl font-semibold ">Pricing Information</h3>
             <p className=" mt-2">To use the advertising features, there is a charge of <strong>₹300 per month</strong>.</p>

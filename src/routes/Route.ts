@@ -23,10 +23,12 @@
      CHAT: "/Chat",
      CREATEADD: "/createadd",
      BUISNESS: "/addbuisness",
-    TERMS_AND_CONDITION:'/terms_and_condition'
+     TERMS_AND_CONDITION: '/terms_and_condition',
+    ADVERTISEMENT_PAYMENT_SUCESS:'/advertisement-payment-success'
   },
   ADMIN: {
-    DASHBOARD: "/adminDashBord",
+    ADMINDASHBOARD: "/adminDashBord",
+    DASHBOARD: "/DashBord",
     TAGS: "/tagList",
     REPORTS: "/repotedList",
     SINGLE_REPORT: "/single/:id",
