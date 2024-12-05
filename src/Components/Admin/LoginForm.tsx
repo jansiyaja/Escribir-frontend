@@ -9,6 +9,7 @@ import { setCredentials } from '../../redux/slices/adminSlice';
 import Spinner from '../Spinner';
 import PasswordToogle from '../PasswordToggle';
 import axiosAdminInstance from '../../services/Api/axioxAdminInstance';
+import { ROUTES } from '../../routes/Route';
 
 
 const LoginForm = () => {
@@ -90,7 +91,7 @@ const LoginForm = () => {
         }));
         
         
-           navigate("/adminDashBord");
+           navigate(ROUTES.ADMIN.DASHBOARD);
         }
       } catch (error) {
         console.error('Login error:', error);

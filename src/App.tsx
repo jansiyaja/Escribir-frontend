@@ -62,7 +62,7 @@ function App() {
               <Route path={ROUTES.PUBLIC.REGISTER} element={<CommonPage page="register" />} />
               <Route path={ROUTES.PUBLIC.OTP_VERIFICATION} element={<CommonPage page="otp" />} />
               <Route path={ROUTES.PUBLIC.LOGIN} element={<CommonPage page="login" />} />
-              <Route path={ROUTES.PUBLIC.ADMIN_LOGIN} element={<LoginPage />} />
+             
               <Route path={ROUTES.PUBLIC.ABOUT} element={<About />} />
               <Route path={ROUTES.PUBLIC.CONTACT} element={<Contact />} />
               <Route path={ROUTES.PUBLIC.HOME} element={<HomePage />} />
@@ -99,7 +99,7 @@ function App() {
                 <Route path={ROUTES.ADMIN.REPORTS} element={<Report />} />
                 <Route path={ROUTES.ADMIN.SINGLE_REPORT} element={<SinglePage />} />
               </Route>
-
+                <Route path={ROUTES.PUBLIC.ADMIN_LOGIN} element={<LoginPage />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
