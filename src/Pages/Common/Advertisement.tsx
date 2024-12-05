@@ -118,7 +118,7 @@ const Advertisement = () => {
       </section>
 
      
-      <section className={`relative bg-cover bg-center bg-[url('https://via.placeholder.com/1600x900')] text-white ${darkMode ? "bg-black" : ""}`}>
+      <section className={`relative bg-cover bg-center bg-[url('https://escribir.s3.eu-north-1.amazonaws.com/advertisement.jpg')] text-white ${darkMode ? "bg-black" : ""}`}>
         <div className="bg-black bg-opacity-50 py-16 md:py-24">
           <div className="container mx-auto text-center px-6">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">Create Your Ad Today</h2>
@@ -157,17 +157,17 @@ const Advertisement = () => {
   <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
     {[ 
       {
-        image: "https://via.placeholder.com/600x400",
+        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbbaner2.jpg",
         title: "Video Ads",
         description: "Capture attention with high-quality video content.",
       },
       {
-        image: "https://via.placeholder.com/600x400",
+        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbanner3.jpg",
         title: "Banner Ads",
         description: "Make a statement with vibrant, clickable banners.",
       },
       {
-        image: "https://via.placeholder.com/600x400",
+        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbanner.jpg",
         title: "Text Ads",
         description: "Deliver a clear message with minimal distractions.",
       },
