@@ -94,7 +94,7 @@ const SingleBlog: React.FC = () => {
   }, [id, userId]);
 
     useEffect(() => {
-    if (advertisements.length > 0 && blogPost) {
+    if (advertisements.length > 0 && blogPost  && !user?.isPremium) {
       const relevantAd = advertisements.find(
         (ad) =>
           ad.targetAudience === 'Blog Page' ||

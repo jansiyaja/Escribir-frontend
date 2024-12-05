@@ -12,7 +12,7 @@ import {
   HiPower,
   HiOutlineGlobeAlt,
   HiOutlineUserGroup,
-  HiOutlineAcademicCap,
+ 
 
 } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
@@ -44,15 +44,16 @@ const navigate=useNavigate()
       </Link>
 
       <nav className="flex flex-col space-y-6">
-        <Link to={'/adminDashBord'}>
+   
+       
+        <Link to={'/DashBord'}>
         <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
           <HiOutlineHome className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>
        </Link>
-       
-        <Link to={'/DashBord'}>
+        <Link to={'/Users'}>
         <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
-          <HiOutlineAcademicCap className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
+          <HiOutlineUserGroup className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>
        </Link>
        
@@ -67,10 +68,7 @@ const navigate=useNavigate()
           <HiOutlineDocument className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>
         </Link>
-        
-        <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
-          <HiOutlineUserGroup className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
-        </IconButton>
+
         <IconButton className="p-2 rounded-lg hover:bg-gray-200" variant="ghost">
           <HiOutlineGlobeAlt className={`w-5 h-5 ${darkMode ? 'text-white' : 'text-gray-600'}`} />
         </IconButton>

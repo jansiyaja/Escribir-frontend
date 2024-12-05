@@ -29,7 +29,7 @@ const Header = () => {
   const handleLogout = async () => {
     await userLogout()
     dispatch(logout());
-    navigate("/logout", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,8 +38,8 @@ const Header = () => {
 
   const sidebarFeatures: Record<string, Feature[]> = {
     dashboard: [
-      { label: "Dashboard", path: "/dashboard" },
-      { label: "Profile", path: "/profile" },
+      { label: "Dashboard", path: ROUTES.PROTECTED.DASHBOARD },
+ ...(user?.role === 'client' ? [{ label: "Client", path: ROUTES.PROTECTED.CLIENTDASHBOARD }] : []),
       { label: "Settings", path: "/settings" },
     ],
   };

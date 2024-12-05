@@ -12,6 +12,7 @@ import TextAd from "../Advertisement/TextAd";
 const HomePage: React.FC = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
   const advertisements = useSelector((state: RootState) => state.ad.advertisement);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [adVisible, setAdVisible] = useState(true); 
   const [currentAd, setCurrentAd] = useState<any>(null); 
 
@@ -47,11 +48,11 @@ const HomePage: React.FC = () => {
     listAdvertisements();
   }, [dispatch]);
 
-  // Show ad specific to the target audience
+ 
   useEffect(() => {
-    if (advertisements && advertisements.length > 0) {
+    if (advertisements && advertisements.length > 0 && !user?.isPremium) {
       const homepageAd = advertisements.find(
-        (ad) => ad.targetAudience === "Homepage"
+        (ad) => ad.targetAudience === "Homepage" 
       );
 
       if (homepageAd) {

@@ -55,6 +55,12 @@ const PaymentSuccessPage: React.FC<PaymentSuccessProps> = ({
         const updatedUser = {
           ...user,
           isPremium: true,
+              subscription: {
+      ...user.subscription,
+      amount: amount
+    }
+
+          
         };
           dispatch(setUser(updatedUser));
           navigate(ROUTES.PUBLIC.HOME)

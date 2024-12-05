@@ -35,3 +35,17 @@ export const LIST_ADVETISEMENTS = async ( ) => {
         return Promise.reject(error);
     }
 }
+export const LIST_USER_ADVETISEMENTS = async ( ) => {
+    try {
+        return await axiosInstance.get(clientEndpoints.LIST_USER_ADVETISEMENTS,{withCredentials: true});
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
+export const PAUSE_ADD = async (adId: string|undefined) => {
+    try {
+        return await axiosInstance.post(clientEndpoints.PAUSE_ADD,  { adId },{withCredentials: true});
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}

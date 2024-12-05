@@ -124,7 +124,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         audio: true,
         video: incomingCall.type === "video",
       });
-      setLocalStream(stream);
+     
      
      
 

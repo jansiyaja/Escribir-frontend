@@ -1,3 +1,13 @@
+interface Subscription {
+  amount: number;
+  startDate: string;
+  endDate: string;
+  plan: string;
+  status: string;
+  lastPaymentDate: string;
+  subscriptionId: string;
+  stripeId: string;
+}
 
 
 export interface User {
@@ -14,6 +24,7 @@ export interface User {
   phone?: string;
   image?: string
   isPremium: boolean
+  subscription:Subscription
   twoFactorEnabled: boolean
 }
 

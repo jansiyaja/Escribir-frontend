@@ -170,32 +170,43 @@ const ChatInterface: React.FC<ChatProps> = ({ receiver }) => {
     setShowEmojiPicker(false);
   };
 
+ useEffect(() => {
+    // Listening for typing status changes from the backend
+    socket.on("typing-status", (data) => {
+   console.log("Current Receiver ID:", user?._id);
+console.log("Received data:", data.receiverId);
+
+      if (data.receiverId === user?._id) {
+        setTypingStatus(data.isTyping);
+      }
+    });
+
+    return () => {
+      // Cleanup when component unmounts
+      socket.off("typing-status");
+    };
+  }, [recieverId]);
+
 const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
   const inputValue = e.target.value;
   setMessage(inputValue);
 
-  if (inputValue) {
-    
+  if (inputValue.trim()) {
+    console.log("Frontend: Emitting 'typing' event");
     socket.emit("typing", { receiverId: recieverId });
   } else {
-   
+    console.log("Frontend: Emitting 'stop-typing' event");
     socket.emit("stop-typing", { receiverId: recieverId });
   }
 };
-useEffect(() => {
-  socket.on("typing-status", (data) => {
-   
-    if (data.receiverId === user?._id) {
-    
-      
-      setTypingStatus(data.isTyping); 
-    }
-  });
 
-  return () => {
-    socket.off("typing-status");
-  };
-}, [recieverId]);
+const handleBlur = () => {
+  console.log("Frontend: Input lost focus. Emitting 'stop-typing' event");
+  socket.emit("stop-typing", { receiverId: recieverId });
+};
+
+
+
 
   return (
     <div className="flex flex-col h-screen max-h-[800px] bg-white rounded-lg shadow-lg">
@@ -217,7 +228,7 @@ useEffect(() => {
                 {msg.username !== username && (
                   <img
                     src={
-                      currentReceiver.image || "https://via.placeholder.com/158"
+                      currentReceiver?.image || "https://via.placeholder.com/158"
                     }
                     alt={`${msg.username}'s profile`}
                     className="w-10 h-10 rounded-full"
@@ -268,12 +279,15 @@ useEffect(() => {
             <Paperclip className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex-grow">
-              {typingStatus && <p>{receiver?.username} is typing...</p>}
+             {
+  typingStatus && <span>User is typing...</span>
+}
+
             <input
               type="text"
               value={message}
                onChange={handleTyping}
-              
+              onBlur={handleBlur}
               placeholder="Type a message..."
               className="w-full p-3 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white"
             />

@@ -24,7 +24,8 @@
      CREATEADD: "/createadd",
      BUISNESS: "/addbuisness",
      TERMS_AND_CONDITION: '/terms_and_condition',
-    ADVERTISEMENT_PAYMENT_SUCESS:'/advertisement-payment-success'
+   ADVERTISEMENT_PAYMENT_SUCESS: '/advertisement-payment-success',
+    CLIENTDASHBOARD:'/client_dashboard'
   },
   ADMIN: {
     ADMINDASHBOARD: "/adminDashBord",
@@ -32,5 +33,6 @@
     TAGS: "/tagList",
     REPORTS: "/repotedList",
     SINGLE_REPORT: "/single/:id",
+    USERS:"/users"
   },
 };

@@ -3,7 +3,8 @@ import { Message } from '../Interfaces/Components';
 
 
  //export const socket = io(import.meta.env.VITE_API_BASE_URL, { withCredentials: true });
- export const socket = io("http://localhost:3000", { withCredentials: true });
+export const socket = io("http://localhost:3000", { withCredentials: true });
+
  export const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 let peerConnection: RTCPeerConnection | null = null;
 
@@ -195,7 +196,7 @@ export const startCall = async (
 
 export const receiveCall = (callback: (callInfo: CallInfo) => void) => {
   socket.on("receive-call", async ({ from, offer, callType }: CallInfo) => {
-    console.log("Incoming call received from:", from.username);
+    console.log("Incoming call received from:", from.userId);
     console.log("Call type:", callType);
 
     const peerConnection = new RTCPeerConnection();
@@ -218,13 +219,14 @@ export const receiveCall = (callback: (callInfo: CallInfo) => void) => {
     await peerConnection.setLocalDescription(answer);
 
     console.log("Sending answer back to the caller via socket...");
-    socket.emit("call-answer", { answer });
+    socket.emit("call-answer", {from, answer,callType });
 
     callback({ from, offer, callType });
   });
 };
 
 export const handleCallAnswered = (peerConnection: RTCPeerConnection) => {
+  
   socket.on("call-answered", async ({ answer }: { answer: RTCSessionDescriptionInit }) => {
     console.log("Received call answer from receiver...");
     if (peerConnection) {

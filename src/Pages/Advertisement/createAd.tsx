@@ -21,6 +21,7 @@ const CreateAd = () => {
     const [errors, setErrors] = useState<Partial<AdDetails>>({});
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
+   const [adVisible, setAdVisible] = useState(true); 
 
 
   useEffect(() => {
@@ -114,16 +115,19 @@ const handleSubmit = async () => {
       }
     }
   };
+    const handleAdSkip = () => {
+    setAdVisible(false); // Hide the ad when skipped
+  };
   const renderPreview = () => {
-    if (adDetails.format === "Video Ad") {
-      return <VideoAd title={adDetails.title} link={adDetails.link}   thumbnailPreview={adDetails.thumbnailPreview || ""}/>;
+    if (adVisible&&adDetails.format === "Video Ad") {
+      return <VideoAd title={adDetails.title} link={adDetails.link} thumbnailPreview={adDetails.thumbnailPreview || ""} />;
     }
 
-    if (adDetails.format === "Image Ad") {
-      return <ImageAd title={adDetails.title} link={adDetails.link}   thumbnailPreview={adDetails.thumbnailPreview || ""} />;
+    if (adVisible&&adDetails.format === "Image Ad") {
+      return <ImageAd title={adDetails.title} link={adDetails.link}   thumbnailPreview={adDetails.thumbnailPreview || ""} onSkip={handleAdSkip}/>;
     }
 
-    if (adDetails.format === "Text Ad") {
+    if (adVisible&&adDetails.format === "Text Ad") {
       return <TextAd title={adDetails.title} textContent={adDetails.textContent} link={adDetails.link} />;
     }
 
@@ -225,7 +229,7 @@ const handleSubmit = async () => {
                 {adDetails.thumbnailPreview && (
                   <img
                     src={adDetails.thumbnailPreview}
-                    alt="Ad Thumbnail"
+                    
                     className="mt-4 w-full h-auto object-cover rounded-lg"
                   />
                 )}

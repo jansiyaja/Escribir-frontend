@@ -15,7 +15,9 @@ const Users: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [totalUsers, setTotalUsers] = useState(0);
+    const [totalUsers, setTotalUsers] =useState(0);
+    console.log("total",totalUsers);
+    
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -23,7 +25,7 @@ const Users: React.FC = () => {
         const response = await axiosAdminInstance.get<User[]>('/admin/users', { withCredentials: true });
         console.log('Response from backend:', response.data);
         setUsers(response.data);
-        setTotalUsers(response.data.length); // Set total users for pagination
+        setTotalUsers(response.data.length); 
       } catch (error) {
         console.error('Error fetching users:', error);
       }
@@ -60,9 +62,15 @@ const Users: React.FC = () => {
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   return (
-    <div className="p-8 min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-semibold mb-6 text-gray-800">Users Dashboard</h1>
-
+      <div className="p-8 min-h-screen bg-gray-100">
+           <div className="flex justify-between items-center mb-6">
+        <h1 className="text-4xl font-semibold text-gray-800">Users Dashboard</h1>
+        <div className="flex items-center">
+          <span className="text-gray-600 mr-2">Total Users:</span>
+          <span className="text-black text-lg font-semibold">{totalUsers}</span>
+        </div>
+          </div>
+ 
       {/* Search Input */}
       <div className="flex justify-end mb-6">
         <input

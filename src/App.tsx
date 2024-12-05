@@ -10,7 +10,6 @@ import HomePage from "./Pages/HomePage/HomePage";
 import CommonPage from "./Pages/Common/AuthPage";
 import UserProfile from './Pages/Profile/UserProfile';
 import LoginPage from './Pages/admin/LoginPage';
-import AdminDashboard from './Pages/admin/AdminDashBoard';
 import Blog from './Pages/BlogProfile/Blog';
 import Tags from './Pages/admin/Tags/Tags';
 import Dashboard from './Pages/DashBord/Dashboard';
@@ -40,6 +39,8 @@ import AddBusiness from './Pages/Advertisement/AddBusiness';
 import TermsAndConditions from './Pages/Common/Terms&Services';
 import  { AddPaymentSuccessWrapper } from './Pages/Advertisement/PaymentSuccess';
 import DashBoardAdmin from './Pages/admin/Dashboard';
+import Users from './Pages/admin/Users';
+import ClientDashboard from './Pages/client/DashBoard';
 
 
 
@@ -86,12 +87,14 @@ function App() {
                 <Route path={ROUTES.PROTECTED.EDIT_BLOG} element={<EditBlogPost />} />
                 <Route path={ROUTES.PROTECTED.SINGLE_BLOG} element={<Blog page="singleblog" />} />
                 <Route path={ROUTES.PROTECTED.CHAT} element={<Chat />} />
+                <Route path={ROUTES.PROTECTED.CLIENTDASHBOARD} element={<ClientDashboard />} />
               </Route>
            </Route>
             
               <Route element={<AdminProtectedRoute />}>
-                <Route path={ROUTES.ADMIN.ADMINDASHBOARD} element={<AdminDashboard />} />
+               
                 <Route path={ROUTES.ADMIN.DASHBOARD} element={<DashBoardAdmin />} />
+                <Route path={ROUTES.ADMIN.USERS} element={<Users />} />
                 <Route path={ROUTES.ADMIN.TAGS} element={<Tags />} />
                 <Route path={ROUTES.ADMIN.REPORTS} element={<Report />} />
                 <Route path={ROUTES.ADMIN.SINGLE_REPORT} element={<SinglePage />} />
