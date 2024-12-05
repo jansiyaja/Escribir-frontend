@@ -5,7 +5,7 @@ import { setCredentials } from '../../redux/slices/adminSlice';
 
 
 
-const baseURL = "http://localhost:3000"
+const baseURL = "https://escribir1.furnishop.site"
 
 
  const axiosAdminInstance = axios.create({
