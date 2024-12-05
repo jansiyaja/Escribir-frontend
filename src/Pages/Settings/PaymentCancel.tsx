@@ -1,9 +1,12 @@
 
 import { XCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../routes/Route';
 
 
 const PaymentCancelPage = () => {
-    const reason="cancelled by user"
+  const reason = "cancelled by user"
+  const navigate=useNavigate()
     
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-8">
@@ -39,7 +42,7 @@ const PaymentCancelPage = () => {
         <div className="flex space-x-4 justify-center">
           <button 
             className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-            onClick={() => window.location.href = '/'}
+            onClick={()=>{navigate(ROUTES.PUBLIC.HOME)}}
           >
             Return to Checkout
           </button>
