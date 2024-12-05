@@ -2,7 +2,7 @@
     "rewrites" : [
         {
             "source" : "/(.*)",
-           "destination": "https://escribir1.furnishop.site"
+            "destination":"/index.html"
         }
     ]
 }
