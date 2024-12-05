@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/Route";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-import { useEffect, useState } from "react";
+// import { useState } from "react";
 
 
 const Advertisement = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
  // const user = useSelector((state: RootState) => state.auth.user);
-  const [isClient,setIsClient]=useState(false)
+  // const [isClient,setIsClient]=useState(false)
 
   // if (!user) return
   // useEffect(() => {
@@ -125,7 +125,7 @@ const Advertisement = () => {
             <p className={`text-lg md:text-xl ${darkMode ? "text-gray-300" : "text-gray-200"} max-w-2xl mx-auto mb-8`}>
               With our simple and intuitive tools, you can create a professional-looking ad in just a few clicks.
             </p>
-            {isClient ? (
+            {/* {isClient ? (
           <Link to={ROUTES.PROTECTED.CREATEADD}>
             <button
               className={`bg-yellow-400 text-black px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-yellow-300 transition ${
@@ -145,7 +145,16 @@ const Advertisement = () => {
               Register Your Business
             </button>
           </Link>
-        )}
+            )} */}
+           <Link to={ROUTES.PROTECTED.BUISNESS}>
+            <button
+              className={`bg-green-500 text-white px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-green-400 transition ${
+                darkMode ? "text-black" : ""
+              }`}
+            >
+              Register Your Business
+            </button>
+          </Link>
           </div>
         </div>
       </section>
