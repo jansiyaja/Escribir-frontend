@@ -9,15 +9,15 @@ import { useEffect, useState } from "react";
 
 const Advertisement = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
-  const user = useSelector((state: RootState) => state.auth.user);
+ // const user = useSelector((state: RootState) => state.auth.user);
   const [isClient,setIsClient]=useState(false)
 
-  if (!user) return
-  useEffect(() => {
-    if (user.role == 'client') {
-      setIsClient(true)
-    }
-  })
+  // if (!user) return
+  // useEffect(() => {
+  //   if (user.role == 'client') {
+  //     setIsClient(true)
+  //   }
+  // })
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900" : "bg-gradient-to-b from-gray-100 to-white"}`}>
     
