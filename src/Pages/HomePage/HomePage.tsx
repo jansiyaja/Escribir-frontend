@@ -51,12 +51,12 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     if (advertisements && advertisements.length > 0 && !user?.isPremium) {
       
-      const homepageAds = advertisements.filter((ad) => ad.targetAudience === "Homepage");
+       const homepageAd = advertisements.find(
+        (ad) => ad.targetAudience === "Homepage" 
+      );
 
-      if (homepageAds) {
-       
-        const randomAd = homepageAds[Math.floor(Math.random() * homepageAds.length)];
-        setCurrentAd(randomAd); 
+      if (homepageAd) {
+        setCurrentAd(homepageAd); 
       } else {
         setAdVisible(false); 
       }
