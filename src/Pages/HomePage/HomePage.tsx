@@ -26,13 +26,14 @@ const HomePage: React.FC = () => {
           console.log("Advertisements fetched:", response.data);
 
           const transformedAds = response.data.map((ad: any) => {
+            const content = ad.contents[0]; 
             return {
               id: ad._id,
               title: ad.title,
               link: ad.link,
               format: ad.format,
               targetAudience: ad.targetAudience, 
-              contents: ad.contents, // store all content
+              thumbnailPreview: content,
             };
           });
 
@@ -46,13 +47,14 @@ const HomePage: React.FC = () => {
     listAdvertisements();
   }, [dispatch]);
 
+ 
   useEffect(() => {
     if (advertisements && advertisements.length > 0 && !user?.isPremium) {
-      // Filter ads for the homepage
+      
       const homepageAds = advertisements.filter((ad) => ad.targetAudience === "Homepage");
 
       if (homepageAds.length > 0) {
-        // Select a random ad from the filtered homepage ads
+       
         const randomAd = homepageAds[Math.floor(Math.random() * homepageAds.length)];
         setCurrentAd(randomAd); 
       } else {
@@ -67,34 +69,21 @@ const HomePage: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen flex flex-col items-center ${darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-900"} transition-colors duration-500`}
+      className={`min-h-screen flex flex-col items-center ${
+        darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-900"
+      } transition-colors duration-500`}
     >
       {/* Show Advertisement */}
       {adVisible && currentAd && (
         <>
-          {currentAd.format === "Video Ad" && (
+          {currentAd.format === "Video Ad" ? (
             <VideoAd
               title={currentAd.title}
               link={currentAd.link}
-              thumbnailPreview={currentAd.contents[0]?.value || ""}
+              thumbnailPreview={currentAd.thumbnailPreview}
               onSkip={handleAdSkip}
             />
-          )}
-          {currentAd.format === "Image Ad" && (
-            <ImageAd
-              title={currentAd.title}
-              link={currentAd.link}
-              thumbnailPreview={currentAd.contents[0]?.value || ""}
-              onSkip={handleAdSkip}
-            />
-          )}
-          {currentAd.format === "Text Ad" && (
-            <TextAd
-              title={currentAd.title}
-              link={currentAd.link}
-              textContent={currentAd.contents[0]?.value || ""}
-            />
-          )}
+          ) :null}
         </>
       )}
 
@@ -119,7 +108,27 @@ const HomePage: React.FC = () => {
             Start Writing
           </Link>
         </div>
-      </header>
+          </header>
+                {/* Show Advertisement */}
+      {adVisible && currentAd && (
+        <>
+          { currentAd.format === "Image Ad" ? (
+            <ImageAd
+              title={currentAd.title}
+              link={currentAd.link}
+            thumbnailPreview={currentAd.thumbnailPreview}
+            onSkip={handleAdSkip}
+            />
+                  )
+                      : currentAd.format === "Text Ad" ? (
+            <TextAd
+              title={currentAd.title}
+              link={currentAd.link}
+              textContent={currentAd.thumbnailPreview}
+            />
+          ): null}
+        </>
+      )}
 
       {/* Main Content */}
       <main className="w-full p-6 sm:p-8">
