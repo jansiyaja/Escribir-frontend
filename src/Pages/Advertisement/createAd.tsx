@@ -7,6 +7,8 @@ import ImageAd from "./ImageAd";
 import TextAd from "./TextAd";
 import { CREATEADD } from "../../services/Api/clientApi";
 import { handleAxiosError } from "../../utils/errorHandling";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../routes/Route";
 
 const CreateAd = () => {
   const [adDetails, setAdDetails] = useState<AdDetails>({
@@ -21,7 +23,8 @@ const CreateAd = () => {
     const [errors, setErrors] = useState<Partial<AdDetails>>({});
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [tags, setTags] = useState<Tag[]>([]);
-   const [adVisible, setAdVisible] = useState(true); 
+  const [adVisible, setAdVisible] = useState(true); 
+  const navigate= useNavigate()
 
 
   useEffect(() => {
@@ -107,7 +110,8 @@ const handleSubmit = async () => {
           if (response.status === 201) {
             console.log(response.data);
             
-          alert("Ad Created Successfully!");
+           navigate(ROUTES.PUBLIC.HOME)
+            
         }
       } catch (error) {
         let errorMessage = handleAxiosError(error);
