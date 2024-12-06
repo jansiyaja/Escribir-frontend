@@ -109,7 +109,7 @@ const handleSubmit = async () => {
         const response = await CREATEADD(formData);
           if (response.status === 201) {
             console.log(response.data);
-            
+            alert("Ad Created Successfully!");
            navigate(ROUTES.PUBLIC.HOME)
             
         }
