@@ -33,7 +33,7 @@ const HomePage: React.FC = () => {
               link: ad.link,
               format: ad.format,
               targetAudience: ad.targetAudience, 
-              thumbnailPreview: content,
+                thumbnailPreview: content?.value || "",
             };
           });
 
@@ -53,7 +53,7 @@ const HomePage: React.FC = () => {
       
       const homepageAds = advertisements.filter((ad) => ad.targetAudience === "Homepage");
 
-      if (homepageAds.length > 0) {
+      if (homepageAds) {
        
         const randomAd = homepageAds[Math.floor(Math.random() * homepageAds.length)];
         setCurrentAd(randomAd); 
