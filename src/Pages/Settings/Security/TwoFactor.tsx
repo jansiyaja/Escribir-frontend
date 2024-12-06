@@ -14,6 +14,8 @@ const TwoFactor = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.user);
+  console.log(user);
+  
 
   if (!user) return null;
   useEffect(() => {

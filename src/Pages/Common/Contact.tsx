@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiOutlineEnvelope } from "react-icons/hi2";
 import axiosInstance from "../../services/Api/axiosInstance";
 import { handleAxiosError } from "../../utils/errorHandling";
@@ -19,7 +19,9 @@ const Contact: React.FC = () => {
   ) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
+  useEffect(() => {
 
+},[])
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("Sending...");
@@ -28,7 +30,12 @@ const Contact: React.FC = () => {
       const response = await axiosInstance.post("/users/feedback", formData, {
         withCredentials: true,
       });
+      setStatus("Message sent successfully!");
+        setTimeout(() => {
+      window.location.reload(); 
+    }, 2000)
       console.log(response);
+
     } catch (error) {
       let errormessage = error;
       handleAxiosError(errormessage);

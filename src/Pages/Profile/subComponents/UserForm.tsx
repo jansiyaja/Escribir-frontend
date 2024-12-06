@@ -23,6 +23,8 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     setUserData(user);
   }, [user]);
+  console.log(userData);
+  
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

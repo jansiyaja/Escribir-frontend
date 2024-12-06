@@ -30,7 +30,7 @@ const Advertisement = () => {
             <p className={`text-lg md:text-xl ${darkMode ? "text-gray-300" : "text-gray-200"} max-w-3xl mx-auto mb-8`}>
               Unlock the full potential of your brand with our cutting-edge advertising platform. Create captivating campaigns effortlessly and see your business grow.
             </p>
-            <Link to={ROUTES.PROTECTED.CREATEADD}>
+            <Link to={ROUTES.PROTECTED.BUISNESS}>
               <button className="bg-yellow-400 text-black px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-yellow-300 transition">
                 Start Your Ad Campaign
               </button>
@@ -97,11 +97,7 @@ const Advertisement = () => {
           ))}
         </div>
    
-        <Link to={ROUTES.PROTECTED.CREATEADD}>
-          <button className={`bg-yellow-400 text-black px-8 py-4 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:bg-yellow-300 transition ${darkMode ? "text-white" : ""}`}>
-            Start Your Campaign Now
-          </button>
-        </Link>
+        
       </section>
 
       {/* Final Call to Action Section */}
