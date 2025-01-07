@@ -23,19 +23,36 @@ const HomePage: React.FC = () => {
       try {
         const response = await LIST_ADVETISEMENTS();
         if (response.status === 201 && response.data) {
-          console.log("Advertisements fetched:", response.data);
+         
 
-          const transformedAds = response.data.map((ad: any) => {
-            const content = ad.contents[0]; 
-            return {
-              id: ad._id,
-              title: ad.title,
-              link: ad.link,
-              format: ad.format,
-              targetAudience: ad.targetAudience, 
-                thumbnailPreview: content?.value || "",
-            };
-          });
+const transformedAds = response.data.map((ad: any) => {
+  console.log('ad', ad);  // Log the content for each ad
+  if (Array.isArray(ad.content) && ad.content.length > 0) {
+    const randomIndex = Math.floor(Math.random() * ad.content.length);
+    const content = ad.contents[randomIndex];  
+    console.log(`Random index: ${randomIndex}, Content:`, content);  // Debugging line
+    return {
+      id: ad._id,
+      title: ad.title,
+      link: ad.link,
+      format: ad.format,
+      targetAudience: ad.targetAudience,
+      thumbnailPreview: content?.value || "",
+    };
+  } else {
+    console.log('No valid content in ad:', ad);  // Log if content is invalid
+    return {
+      id: ad._id,
+      title: ad.title,
+      link: ad.link,
+      format: ad.format,
+      targetAudience: ad.targetAudience,
+      thumbnailPreview: "",
+    };
+  }
+});
+
+
 
           dispatch(setAdvertisement(transformedAds));
         }

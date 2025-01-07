@@ -21,15 +21,11 @@ import SinglePage from './Pages/admin/Report/SubComponents/SinglePage';
 import Chat from './Pages/Chat/Chat';
 import About from './Pages/Common/About';
 import Contact from './Pages/Common/Contact';
-
-
 import './theme.css';
 import { ErrorBoundary } from './ErrorBoundary';
-
 import { ROUTES } from './routes/Route';
 import NotFound from './Pages/Common/NotFound';
 import SettingsPage from './Pages/Settings/SettingsPage';
-
 import PaymentCancelPage from './Pages/Settings/PaymentCancel';
 import { PaymentSuccessPageWrapper } from './Pages/Settings/PaymentSuccessPage';
 import Layout from './Layout';
