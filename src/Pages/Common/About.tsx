@@ -47,13 +47,13 @@ const About: React.FC = () => {
           Have something to share? Start writing your own blog on Escribir! We encourage diverse voices and unique perspectives.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Card Components */}
+        
           {["Start Writing", "Engage with the Community"].map((title, index) => (
             <div key={index} className={`p-6 rounded-lg shadow-lg transition-shadow ${darkMode ? "bg-gray-800 text-gray-300" : "bg-white text-gray-700"} hover:shadow-2xl`}>
               <img 
                 src={index === 0 
-                  ? "https://escribir.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2024-11-01+at+8.36.47+PM.jpeg" 
-                  : "https://escribir.s3.eu-north-1.amazonaws.com/WhatsApp+Image+2024-11-01+at+8.35.56+PM.jpeg"} 
+                  ? "https://escribirblog.s3.eu-north-1.amazonaws.com/WriteBlog.jpeg" 
+                  : "https://escribirblog.s3.eu-north-1.amazonaws.com/Writeblog-about.jpeg"} 
                 alt={title} 
                 className="w-full h-40 object-cover rounded-md mb-4" 
               />
@@ -79,7 +79,8 @@ const About: React.FC = () => {
             {["Blog Writing", "Community Engagement", "Interactive Features"].map((title, index) => (
               <div key={index} className={`p-6 rounded-lg shadow-md transition-shadow ${darkMode ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-700"} hover:shadow-lg`}>
                 <img 
-                  src={`https://escribir.s3.eu-north-1.amazonaws.com/image${index + 1}.jpeg`} 
+                  src={`https://escribirblog.s3.eu-north-1.amazonaws.com/image${index + 1}.jpeg`} 
+                
                   alt={title} 
                   className="w-full h-40 object-cover rounded-md mb-4" 
                 />

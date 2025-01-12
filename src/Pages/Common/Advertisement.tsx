@@ -4,20 +4,12 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/Route";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
-// import { useState } from "react";
+
 
 
 const Advertisement = () => {
   const { darkMode } = useSelector((state: RootState) => state.theme);
- // const user = useSelector((state: RootState) => state.auth.user);
-  // const [isClient,setIsClient]=useState(false)
 
-  // if (!user) return
-  // useEffect(() => {
-  //   if (user.role == 'client') {
-  //     setIsClient(true)
-  //   }
-  // })
   return (
     <div className={`min-h-screen ${darkMode ? "bg-gray-900" : "bg-gradient-to-b from-gray-100 to-white"}`}>
     
@@ -114,7 +106,7 @@ const Advertisement = () => {
       </section>
 
      
-      <section className={`relative bg-cover bg-center bg-[url('https://escribir.s3.eu-north-1.amazonaws.com/advertisement.jpg')] text-white ${darkMode ? "bg-black" : ""}`}>
+      <section className={`relative bg-cover bg-center bg-[url('https://escribirblog.s3.eu-north-1.amazonaws.com/advertisement.jpg')] text-white ${darkMode ? "bg-black" : ""}`}>
         <div className="bg-black bg-opacity-50 py-16 md:py-24">
           <div className="container mx-auto text-center px-6">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">Create Your Ad Today</h2>
@@ -162,17 +154,18 @@ const Advertisement = () => {
   <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
     {[ 
       {
-        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbbaner2.jpg",
+        image: "https://escribirblog.s3.eu-north-1.amazonaws.com/adbbaner2.jpg",
         title: "Video Ads",
         description: "Capture attention with high-quality video content.",
       },
       {
-        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbanner3.jpg",
+        image: "https://escribirblog.s3.eu-north-1.amazonaws.com/adbanner3.jpg",
+              
         title: "Banner Ads",
         description: "Make a statement with vibrant, clickable banners.",
       },
       {
-        image: "https://escribir.s3.eu-north-1.amazonaws.com/adbanner.jpg",
+        image: "https://escribirblog.s3.eu-north-1.amazonaws.com/adbanner.jpg",
         title: "Text Ads",
         description: "Deliver a clear message with minimal distractions.",
       },

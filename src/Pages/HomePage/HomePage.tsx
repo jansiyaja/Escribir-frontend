@@ -90,7 +90,7 @@ const transformedAds = response.data.map((ad: any) => {
         darkMode ? "bg-gray-900 text-gray-200" : "bg-gray-50 text-gray-900"
       } transition-colors duration-500`}
     >
-      {/* Show Advertisement */}
+     
       {adVisible && currentAd && (
         <>
           {currentAd.format === "Video Ad" ? (
@@ -104,12 +104,12 @@ const transformedAds = response.data.map((ad: any) => {
         </>
       )}
 
-      {/* Header Section */}
+  
       <header
         className="w-full bg-cover bg-center h-64 relative"
         style={{
           backgroundImage:
-            "url('https://escribir.s3.eu-north-1.amazonaws.com/man-is-using-laptop-books-notebook-top-view.jpg')",
+            "url('https://escribirblog.s3.eu-north-1.amazonaws.com/man-is-using-laptop-books-notebook-top-view.jpg')",
         }}
       >
         <div className="absolute inset-0 bg-black opacity-30"></div>
@@ -126,7 +126,7 @@ const transformedAds = response.data.map((ad: any) => {
           </Link>
         </div>
           </header>
-                {/* Show Advertisement */}
+               
       {adVisible && currentAd && (
         <>
           { currentAd.format === "Image Ad" ? (
@@ -147,9 +147,9 @@ const transformedAds = response.data.map((ad: any) => {
         </>
       )}
 
-      {/* Main Content */}
+    
       <main className="w-full p-6 sm:p-8">
-        {/* Latest Articles Section */}
+     
         <section className="my-8">
           <h2 className="text-3xl font-semibold mb-4">Latest Articles</h2>
           <BlogCard />
