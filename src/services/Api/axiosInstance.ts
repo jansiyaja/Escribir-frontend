@@ -6,7 +6,7 @@ import store from '../../redux/store/store';
 
 
 
-const baseURL = "http://localhost:3000";
+const baseURL = "https://blog.escriber.blog/";
 
  const axiosInstance = axios.create({
     baseURL,
